@@ -45,7 +45,8 @@ def portfolio(frames, core=.8, mode="overlay", capital=10_000_000):
     # QQQ is a market-wide proxy; do not use individual-stock hindsight.
     market=data["QQQ"].Close
     target=target_exposure(market,core=core) if mode=="overlay" else pd.Series(1.,index=dates)
-    cash=float(capital);shares={t:0. for t in tickers};curve=[];orders=0;turnover=0.\n    previous_target=1.
+    cash=float(capital);shares={t:0. for t in tickers};curve=[];orders=0;turnover=0.
+    previous_target=1.
     for i in range(1,len(dates)):
         opens={t:float(data[t].Open.iloc[i]) for t in tickers}
         closes={t:float(data[t].Close.iloc[i]) for t in tickers}
