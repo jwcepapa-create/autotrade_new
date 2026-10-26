@@ -49,6 +49,27 @@ def signals_hybrid(x, lookback=55, atr_stop=3.):
         out.append(state)
     return pd.Series(out,index=x.index)
 
+def signals_c_daily(x, left=3, right=3, confirm=9):
+    """C daily causal prototype: only pivot highs confirmed by right+reaction bars."""
+    h=x.High.to_numpy(float); l=x.Low.to_numpy(float); cl=x.Close.to_numpy(float)
+    n=len(x); available=np.full(n,np.nan)
+    delay=max(right,confirm)
+    for i in range(left,n-delay):
+        if h[i]>=np.max(h[i-left:i+right+1]):
+            available[i+delay]=h[i]
+    resistance=pd.Series(available,index=x.index).ffill().shift(1)
+    breakout=(x.Close>resistance)&(x.Close.shift(1)<=resistance.shift(1))
+    # Enter on retest after a confirmed breakout; only completed bars used.
+    level=resistance.where(breakout).ffill()
+    retest=(x.Low<=level)&(x.Close>level)&(breakout.shift(1).fillna(False))
+    exit_signal=x.Close<x.Close.rolling(20).mean()
+    state=0.; out=[]
+    for enter,leave in zip(retest.fillna(False),exit_signal.fillna(False)):
+        if state and leave:state=0.
+        elif not state and enter:state=1.
+        out.append(state)
+    return pd.Series(out,index=x.index)
+
 def execute_target(x, targets, initial=10_000_000):
     """Next-open rebalance to target exposure; account for costs and overnight gaps."""
     cash=float(initial); shares=0.; curve=[]; orders=0; turnover=0.
@@ -85,7 +106,7 @@ def evaluate_ticker(ticker,raw):
                        "mdd_pct":round(r["max_drawdown"]*100,4),
                        "orders":r["orders"],"turnover":round(r["turnover"],3)})
     models={}
-    for name,targets in [("D_momentum",signals_momentum(x)),("E_breakout_ATR",signals_hybrid(x))]:
+    for name,targets in [("D_momentum",signals_momentum(x)),("E_breakout_ATR",signals_hybrid(x)),("C_daily_prototype",signals_c_daily(x))]:
         curve,orders,turnover=execute_target(x,targets)
         models[name]={"full":evaluate_curve(curve),"orders":orders,"turnover":round(turnover,4),
                       "periods":{}}
