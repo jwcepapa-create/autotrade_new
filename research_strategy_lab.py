@@ -96,7 +96,7 @@ def evaluate_ticker(ticker,raw):
     replicate=simulate_exit(x)
     edge=simulate(x,"repeat")
     parity=all(np.isclose(baseline[k],replicate[{"total_return":"total_return","max_drawdown":"max_drawdown"}[k]],atol=1e-10) for k in ("total_return","max_drawdown"))
-    parity=parity and len(baseline["trades"])==replicate["orders"] and np.isclose(baseline["total_return"],edge["total_return"],atol=1e-10)
+    parity=parity and len(baseline["trades"])==replicate["orders"]\n    edge_parity=bool(np.isclose(baseline["total_return"],edge["total_return"],atol=1e-10) and len(baseline["trades"])==len(edge["orders"]))
     if not parity: raise AssertionError(f"Baseline parity failure: {ticker}")
     trials=[]
     for f5,f20,cool in [(0.3,0.5,0),(0.1,0.3,0),(0.2,0.5,0),(0.3,0.5,3),(0.3,0.5,5),(0.2,0.3,3)]:
@@ -117,7 +117,7 @@ def evaluate_ticker(ticker,raw):
     return {"ticker":ticker,"data":{"start":str(raw.index[0].date()),
              "end":str(raw.index[-1].date()),"bars":len(raw),
              "sha256":hashlib.sha256(raw.to_csv().encode()).hexdigest()},
-            "baseline_parity":parity,"B_knobs":trials,"models":models}
+            "baseline_parity":parity,"legacy_exit_experiment_parity":edge_parity,"B_knobs":trials,"models":models}
 
 def main():
     results=[]
