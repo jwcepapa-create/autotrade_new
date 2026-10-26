@@ -9,7 +9,7 @@ on:
   schedule:
     - cron: '30 23 * * 1-5'
   push:
-    branches: ['feat/tiingo-backtest']
+    branches: ['feat/tiingo-backtest', 'research/strategy-lab']
 permissions:
   contents: read
 concurrency:
@@ -47,11 +47,14 @@ jobs:
       - name: Portfolio backtest (validated local CSV only)
         run: python run_backtest.py
       - name: Strategy B v0.3 breakout backtest (research only)
-        if: github.ref_name == 'research/support-resistance'
+        if: github.ref_name == 'research/support-resistance' || github.ref_name == 'research/strategy-lab'
         run: python research_mts_v03.py
       - name: Compare repeated vs edge-triggered exits (research only)
         if: github.ref_name == 'research/support-resistance'
         run: python research_exit_comparison.py
+      - name: Research lab baseline parity B knobs and C D E backtests
+        if: github.ref_name == 'research/strategy-lab'
+        run: python research_strategy_lab.py
       - name: Save data and diagnostics even on failure
         if: always()
         uses: actions/upload-artifact@v4
