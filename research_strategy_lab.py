@@ -107,6 +107,13 @@ def evaluate_ticker(ticker,raw):
                        "mdd_pct":round(r["max_drawdown"]*100,4),
                        "orders":r["orders"],"turnover":round(r["turnover"],3)})
     models={}
+    benchmark_curve, benchmark_orders, benchmark_turnover=execute_target(x,pd.Series(1.,index=x.index))
+    models["buy_hold"]={"full":evaluate_curve(benchmark_curve),
+                        "orders":benchmark_orders,"turnover":round(benchmark_turnover,4),
+                        "periods":{label:evaluate_curve(benchmark_curve.loc[start:end],
+                        initial=float(benchmark_curve.loc[start:end].iloc[0]))
+                        for label,(start,end) in SPLITS.items()
+                        if len(benchmark_curve.loc[start:end])>1}}
     for name,targets in [("D_momentum",signals_momentum(x)),("E_breakout_ATR",signals_hybrid(x)),("C_daily_prototype",signals_c_daily(x))]:
         curve,orders,turnover=execute_target(x,targets)
         models[name]={"full":evaluate_curve(curve),"orders":orders,"turnover":round(turnover,4),
