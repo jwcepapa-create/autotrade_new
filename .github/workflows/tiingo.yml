@@ -49,6 +49,9 @@ jobs:
       - name: Strategy B v0.3 breakout backtest (research only)
         if: github.ref_name == 'research/support-resistance'
         run: python research_mts_v03.py
+      - name: Compare repeated vs edge-triggered exits (research only)
+        if: github.ref_name == 'research/support-resistance'
+        run: python research_exit_comparison.py
       - name: Save data and diagnostics even on failure
         if: always()
         uses: actions/upload-artifact@v4
