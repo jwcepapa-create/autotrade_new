@@ -1,9 +1,103 @@
-# Momentum backtest (research prototype)
+# Tiingo 미국 주식 연구용 백테스트
 
-GitHub Actions downloads Yahoo Finance daily (5y) and 5-minute (60d, subject to provider limits) prices for 10 example US stocks and runs separate swing and intraday tests.
+기존 스윙·단타 전략을 보존하면서 Yahoo 다운로드 경로를 Tiingo EOD로 교체했습니다.
+실계좌 연결이나 주문 기능은 없습니다. **API 검증과 백테스트 완료는 별개의 단계입니다.**
 
-## Run
-GitHub repository > Actions > Momentum backtest > Run workflow. After it finishes, open the run and download the `momentum-backtest-results` artifact (CSV and JSON). It is also scheduled weekdays at 23:30 UTC; scheduled runs may be delayed or disabled by GitHub.
+## 실행
 
-## Limitations
-This is a prototype, not a validated all-US-stocks test. The ticker list is a current hand-picked sample with selection/survivorship bias. Intraday uses session VWAP rather than swing-anchored VWAP; 3R full exits rather than 3R/5R split. No portfolio-level CAGR/MDD or realistic execution model. Successful execution is not proof of profitability.
+Python 3.12:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt pytest
+python -m pytest -q
+# TIINGO_API_KEY를 안전하게 환경변수로 제공 (소스/커맨드라인에 키를 적지 마세요).
+python tiingo_data.py --probe-intraday
+# 위 단계가 성공했을 때만:
+python backtest.py
+```
+
+기본 종목은 QQQ, SPY, NVDA, TSLA, AMD, AMZN, META이며 시작일은 2016-01-01입니다.
+완료되지 않은 일봉을 피하기 위해 종료일은 뉴욕 기준 전날이며 비거래일은 제외합니다.
+`tiingo_data.py --end YYYY-MM-DD --refresh`로 종료일과 전체 갱신을 지정할 수 있습니다.
+
+## Actions
+
+저장소 Secret 이름은 `TIINGO_API_KEY`입니다. 워크플로가 이 Secret을 환경변수로 전달하며
+토큰을 조회·출력하거나 URL 쿼리에 넣지 않습니다. 응답 본문과 인증 헤더도 로그에 남기지 않습니다.
+
+- `.github/workflows/tiingo.yml`: 수동 실행, 평일 23:30 UTC 정기 실행.
+- 개발 브랜치 `feat/tiingo-backtest`에 push하면 실제 API 검증을 실행합니다.
+- 정기 실행 및 Actions 화면의 수동 실행 버튼은 워크플로가 기본 브랜치에 반영된 뒤 사용할 수 있습니다.
+- 테스트 → CSV 캐시 복원 → 실제 API 검증 → 성공한 경우에만 백테스트 순으로 실행합니다.
+- `tiingo-research-<run-id>-<attempt>` Artifact에 CSV와 결과·진단 파일을 저장합니다. 실패해도 수집된 데이터와 검증 JSON을 업로드합니다.
+- 캐시는 14일 overlap 증분 조회를 사용합니다. 수정주가·원본 데이터 변경이나 새 배당/분할을 발견하면 전체 이력을 갱신합니다.
+- 서버의 과거 수정이 overlap 이전에만 발생하면 자동 감지되지 않을 수 있습니다. 주기적으로 수동 `refresh=true` 실행을 권장합니다.
+- 동시 실행은 브랜치별로 직렬화합니다. 무료 계정 호출 제한을 무제한이라고 가정하지 않습니다.
+
+## 데이터 권한·품질 검증
+
+Tiingo의 현재 무료 계정 조건은 [공식 가격 안내](https://www.tiingo.com/about/pricing)와
+[API 문서](https://www.tiingo.com/documentation/end-of-day)를 확인하세요.
+이 프로그램은 가격 페이지의 숫자를 계정 권한의 증거로 사용하지 않습니다. 실제 키로 요청한
+기간·종목이 반환되는지 검사합니다. 계정의 플랜명이나 총 잔여 한도는 가격 데이터 API에서 확정할 수 없습니다.
+
+- 401: 키 누락/인증 실패, 403: 계정·플랜 권한 거부, 404: 종목·엔드포인트 없음,
+  429: 호출 제한으로 구분합니다. 429/일시적 서버·네트워크 실패는 최대 3회만 재시도합니다.
+- 일봉은 종목별 순차 호출하며, 숫자로 된 rate-limit 헤더가 있으면 진단 파일에 기록합니다.
+- 전체 요청 기간을 XNYS 거래 캘린더와 비교합니다. 하루라도 누락되거나 중복·비거래일·잘못된 OHLC가 있으면 실패합니다.
+  주말·공휴일은 누락으로 세지 않고, 가격을 임의로 채우지 않습니다.
+- `data/<ticker>.csv`에 원본 OHLCV와 `adjOpen/High/Low/Close/Volume`, `divCash`, `splitFactor`를 함께 보존합니다.
+  OHLC 수정 비율의 일관성을 검사하며 배당·분할 이벤트 수를 기록합니다.
+- 스윙에는 공급자 수정 OHLCV를 사용합니다. 배당을 별도 현금으로 더하지 않아 중복 계상을 방지합니다.
+  이는 수정주가 수익률 근사이며, 실제 주식 수·배당 현금 장부는 아닙니다.
+- IEX 5분봉은 2016-01-04~05 QQQ 접근을 별도로 probe합니다. EOD 접근 성공만으로 IEX 권한을 가정하지 않습니다.
+  전체 기간 5분봉 데이터가 검증되지 않았으므로 **단타는 명시적으로 skipped**이며 수익률 0으로 표시하지 않습니다.
+  IEX 접근 거부·빈 결과는 `data_validation.json`의 별도 사유로 남깁니다.
+- 하나라도 일봉 검증이 실패하면 전체 포트폴리오 결과를 만들지 않습니다.
+
+## 기존 전략과 오류 수정
+
+`backtest.py`의 `indicators`, `screen`, `swing`, `intraday`를 유지합니다.
+21일 30% 모멘텀, 63/126일 추세, EMA, 유동성, 눌림/양봉 반전, 다음 시가 진입,
+8%/4% 위험 거리 제한, 3R 목표, 스윙 최대 10봉 보유와 단타 당일 청산 규칙을 바꾸지 않았습니다.
+원래 스윙 루프의 최종 `max_hold+2` 구간 신호 제외도 유지하며, 시작 후 126거래일은 지표 준비 기간입니다.
+
+수정한 실행 오류는 두 가지입니다.
+
+1. 스윙 첫 유효 지표 행에서 `iloc[-1]`로 마지막 행을 읽던 미래 참조를 방지합니다.
+2. 목표가 위 시가 갭은 그 시가에 청산합니다. 원래 코드는 그 이후의 저가를 먼저 확인했습니다.
+   시가가 손절·목표 사이이고 한 봉에 양쪽을 모두 건드리면 기존처럼 손절 우선입니다.
+
+단타는 이전에 완료된 일봉만 참조하며 5분봉의 다음 시가에 진입합니다.
+과거 일봉을 가공해 5분봉인 것처럼 사용하지 않습니다.
+
+## 포트폴리오·비용 가정
+
+- 초기 자금 총 **10,000,000원**. 7개 종목에 동일한 초기 자금의 독립 슬리브를 배정하며 리밸런싱하지 않습니다.
+- `portfolio.py`가 일별 현금/평가금액을 계산합니다. 슬리브별 가용 현금의 0.5% 위험 예산과 매수 가능 금액 중 작은 수량을 사용합니다.
+  기존 `swing(risk_pct=...)` 인자는 실제 자금 관리에 사용되지 않았으므로 자금 관리를 별도로 구현했습니다.
+- 포지션 크기에 미래 청산 손익을 사용하지 않으며, 다른 종목 자금을 재사용하지 않습니다. 차입·레버리지는 없습니다.
+- 분할 조정 수량과 소수 수량을 허용합니다. 실제 정수 주식 주문 모델은 아닙니다.
+- 원/달러는 **1,350원이라는 고정 가정**이며 `--krw-per-usd`로 변경합니다. 환율 수익·환전 비용·양도소득세는 포함하지 않습니다.
+- 한국 개인의 미국 주식 거래에 대한 예시 비용: 편도 수수료 **25bps(0.25%)**, 편도 슬리피지 **5bps(0.05%)**,
+  매도 부과금 **0.3bps**. 특정 증권사 실제 요율이나 날짜별 SEC/FINRA 요율을 재현한다고 주장하지 않습니다.
+  `--fee-bps`, `--slippage-bps`, `--sell-levy-bps`로 변경 가능합니다.
+- QQQ Buy & Hold도 전체 동일 초기 자금과 같은 비용으로 첫 거래일 시가 매수, 마지막 종가 매도합니다.
+- 수익률, CAGR(실제 달력 기간), MDD(초기 자금 포함 일별 평가금액), Sharpe(252일, 무위험 0),
+  비용 차감 손익 기준 승률·Profit Factor·거래 횟수를 계산합니다. 거래는 완료된 왕복 거래 1회 기준입니다.
+  거래가 없으면 승률은 N/A, 손실 거래가 없으면 Profit Factor는 N/A로 둡니다.
+- 현재 선정된 종목의 선택/생존 편향, 수정주가의 사후 조정과 가격·유동성 필터의 영향이 있습니다.
+  체결 경로와 호가창을 알 수 없는 일봉 시뮬레이션이며 검증된 수익 보장이 아닙니다.
+
+## 결과
+
+- `data_validation.json`: 종목별 성공·실패, 기간/누락 수, 배당/분할, 캐시/권한/호출 진단.
+- `swing_signals.csv`: 기존 전략의 원본 거래 기록.
+- `swing_trades.csv`, `qqq_buy_hold_trades.csv`: 비용·수량·순손익 포함 완료 거래.
+- `swing_equity.csv`, `qqq_buy_hold_equity.csv`: 원화 일별 자산 곡선.
+- `metrics.csv`, `summary.json`, `report.html`: 비교 성과와 가정. 수익률 지표는 소수(0.10 = 10%)입니다.
+
+테스트는 가짜 응답과 합성 시계열로 오류·계산·미래 참조를 검증합니다.
+**테스트 통과 자체는 Tiingo 실제 데이터 다운로드나 실데이터 수익률 검증의 증거가 아닙니다.**

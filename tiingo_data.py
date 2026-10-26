@@ -1,5 +1,6 @@
 """Tiingo EOD client: credentials in Authorization only; never log response bodies."""
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -160,6 +161,7 @@ def load_daily(client, ticker, start, end, cache_dir, refresh=False):
     temp = path.with_suffix('.tmp')
     d.to_csv(temp)
     temp.replace(path)
+    info['sha256'] = hashlib.sha256(path.read_bytes()).hexdigest()
     info['cache_mode'] = mode
     return d.loc[start:end], info
 
@@ -170,7 +172,16 @@ def adjusted(d):
                          ['Open', 'High', 'Low', 'Close', 'Volume'])))
 
 
+def clear_performance(output):
+    # Only our own known products, never unrelated files in a user-selected directory.
+    names = ['summary.json', 'metrics.csv', 'report.html', 'swing_signals.csv',
+             'swing_trades.csv', 'qqq_buy_hold_trades.csv', 'swing_equity.csv', 'qqq_buy_hold_equity.csv']
+    for name in names:
+        (Path(output) / name).unlink(missing_ok=True)
+
+
 def collect(start, end, cache_dir, output, refresh=False, probe_intraday=False):
+    clear_performance(output)
     report = {'provider': 'Tiingo', 'start': start, 'end': end, 'tickers': {},
               'intraday': {'status': 'not_verified', 'reason': 'No 5-minute entitlement assumed.'},
               'plan': 'Account tier not exposed by prices API; successful requests prove only requested coverage.'}
