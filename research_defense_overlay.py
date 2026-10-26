@@ -11,6 +11,9 @@ from tiingo_data import TICKERS, adjusted, validate_values
 from research_strategy_lab import COST
 
 STRESS={
+    "dotcom_crash":("2000-03-10","2002-10-09"),
+    "global_financial_crisis":("2007-10-09","2009-03-09"),
+    "q4_2018":("2018-10-01","2018-12-31"),
     "covid_crash":("2020-02-19","2020-04-30"),
     "inflation_bear":("2022-01-03","2022-12-30"),
     "recent_2024_2026":("2024-01-02","2026-10-23"),
@@ -56,7 +59,8 @@ def portfolio(frames, core=.8, mode="overlay", capital=10_000_000):
             for t in tickers:
                 q=budget/(opens[t]*(1+COST))
                 cash-=q*opens[t]*(1+COST);shares[t]+=q;orders+=1;turnover+=q*opens[t]
-        if mode=="overlay":
+        if mode=="overlay" and (i==1 or float(target.iloc[i-1])!=previous_target):
+            previous_target=float(target.iloc[i-1])
             # Preserve equal shares in the baseline. Adjust only total exposure
             # by proportional liquidation/re-entry; do not force equal-weight daily.
             equity=cash+sum(shares[t]*opens[t] for t in tickers)
