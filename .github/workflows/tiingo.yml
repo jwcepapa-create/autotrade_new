@@ -69,6 +69,9 @@ jobs:
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
         run: python research_historical_etf.py
+      - name: G1-G5 RSI MACD stochastic zones and volume research
+        if: github.ref_name == 'research/strategy-lab'
+        run: python research_g_multisignal.py
       - name: Save data and diagnostics even on failure
         if: always()
         uses: actions/upload-artifact@v4
