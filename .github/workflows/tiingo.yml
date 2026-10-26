@@ -1,0 +1,58 @@
+name: Tiingo research backtest
+on:
+  workflow_dispatch:
+    inputs:
+      refresh:
+        description: Refresh full history (corporate actions are also detected automatically)
+        type: boolean
+        default: false
+  schedule:
+    - cron: '30 23 * * 1-5'
+  push:
+    branches: ['feat/tiingo-backtest']
+permissions:
+  contents: read
+concurrency:
+  group: tiingo-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  verify-and-backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt pytest
+      - name: Unit tests
+        run: python -m pytest -q
+      - uses: actions/cache@v4
+        with:
+          path: data
+          key: tiingo-eod-v1-${{ github.ref_name }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            tiingo-eod-v1-${{ github.ref_name }}-
+            tiingo-eod-v1-main-
+      - name: Verify actual Tiingo access and historical coverage
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          REFRESH: ${{ inputs.refresh }}
+        shell: bash
+        run: |
+          args=()
+          if [[ "$REFRESH" == 'true' ]]; then args+=(--refresh); fi
+          python tiingo_data.py --probe-intraday "${args[@]}"
+      - name: Portfolio backtest (validated local CSV only)
+        run: python run_backtest.py
+      - name: Save data and diagnostics even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tiingo-research-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            data/*.csv
+            results/
+          if-no-files-found: warn
+          retention-days: 14
