@@ -1,10 +1,8 @@
-"""Research-only momentum pullback backtest. Uses Yahoo Finance via yfinance.
+"""Research-only momentum pullback backtest. Daily data supplied by Tiingo; no live-account or order integration.
 Survivorship bias: supplied tickers are current constituents; do not treat as institutional-grade validation.
 """
-import argparse
 import numpy as np
 import pandas as pd
-import yfinance as yf
 
 
 def indicators(df):
@@ -22,11 +20,11 @@ def screen(d):
     return (d.Close>5)&(d.dv20>20e6)&(d.ret21>.30)&(d.ret63>0)&(d.ret126>0)&(d.ema21>d.ema50)
 
 def swing(ticker, d, max_hold=10, risk_pct=.005):
-    """Signals on close, fills next open; stop/target checked from following bars.
-    Same-bar stop and target: pessimistically assume stop first. One position per ticker.
+    """Signals on close, fills next open; stop/target checked starting on the entry bar.
+    Opening gaps execute first; otherwise same-bar stop and target assumes stop first. One position per ticker.
     """
     d=indicators(d).dropna().copy(); mask=screen(d)
-    records=[]; i=0
+    records=[]; i=1
     while i<len(d)-max_hold-2:
         row=d.iloc[i]
         # Previous trend + pullback near 21EMA + bullish reversal on close
@@ -40,8 +38,8 @@ def swing(ticker, d, max_hold=10, risk_pct=.005):
         for j in range(entry_idx,min(len(d),entry_idx+max_hold)):
             b=d.iloc[j]
             if b.Open<=stop: exit_price=float(b.Open);why='gap_stop';exit_idx=j;break
-            if b.Low<=stop: exit_price=stop;why='stop';exit_idx=j;break
             if b.Open>=target: exit_price=float(b.Open);why='gap_target';exit_idx=j;break
+            if b.Low<=stop: exit_price=stop;why='stop';exit_idx=j;break
             if b.High>=target: exit_price=target;why='target';exit_idx=j;break
         if exit_price is None: exit_price=float(d.iloc[exit_idx].Close)
         records.append({'ticker':ticker,'entry_date':str(d.index[entry_idx].date()),'exit_date':str(d.index[exit_idx].date()),'entry':entry,'stop':stop,'exit':exit_price,'R':(exit_price-entry)/r,'exit_reason':why})
@@ -84,41 +82,17 @@ def intraday(ticker, bars, daily):
         for j in range(entry_i,len(g)):
             b=g.iloc[j]
             if b.Open<=stop:exit_price=float(b.Open);why='gap_stop';exit_i=j;break
-            if b.Low<=stop:exit_price=stop;why='stop';exit_i=j;break
             if b.Open>=target:exit_price=float(b.Open);why='gap_target';exit_i=j;break
+            if b.Low<=stop:exit_price=stop;why='stop';exit_i=j;break
             if b.High>=target:exit_price=target;why='target';exit_i=j;break
         records.append({'ticker':ticker,'entry_date':str(g.index[entry_i]),'exit_date':str(g.index[exit_i]),'entry':entry,'stop':stop,'exit':exit_price,'R':(exit_price-entry)/r,'exit_reason':why})
     return records
 
-def fetch(ticker,period,interval):
-    x=yf.download(ticker,period=period,interval=interval,auto_adjust=True,progress=False,threads=False)
-    if isinstance(x.columns,pd.MultiIndex):x.columns=x.columns.get_level_values(0)
-    return x.dropna()
-
-def report(trades, fee_bps=10):
-    if not trades:return {'trades':0,'note':'No trades; no performance claim possible'}
-    d=pd.DataFrame(trades)
-    # Conservative cost approximation as R based on entry risk distance
-    d['net_R']=d.R-2*fee_bps/10000*d.entry/(d.entry-d.stop)
-    return {'trades':len(d),'win_rate':round(float((d.net_R>0).mean()),4),'mean_net_R':round(float(d.net_R.mean()),4),'profit_factor':round(float(d.loc[d.net_R>0,'net_R'].sum()/abs(d.loc[d.net_R<0,'net_R'].sum())),3) if (d.net_R<0).any() else None}
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--tickers',default='NVDA,AMD,PLTR,IONQ,TSLA,AMZN,META,APP,COIN,HOOD');ap.add_argument('--period',default='5y');ap.add_argument('--intraday-period',default='60d');ap.add_argument('--output',default='results');args=ap.parse_args()
-    import os,json
-    os.makedirs(args.output,exist_ok=True)
-    sw=[];day=[]; errors={}
-    for ticker in args.tickers.split(','):
-        ticker=ticker.strip().upper()
-        try:
-            daily=fetch(ticker,args.period,'1d')
-            if len(daily)<160:continue
-            sw+=swing(ticker,daily)
-            minute=fetch(ticker,args.intraday_period,'5m')
-            if not minute.empty:day+=intraday(ticker,minute,daily)
-        except Exception as e:errors[ticker]=str(e)
-    pd.DataFrame(sw).to_csv(os.path.join(args.output,'swing_trades.csv'),index=False)
-    pd.DataFrame(day).to_csv(os.path.join(args.output,'intraday_trades.csv'),index=False)
-    summary={'swing':report(sw),'intraday':report(day),'errors':errors,'limitations':['Current tickers: survivorship and selection bias','Intraday uses session VWAP, not swing-anchored AVWAP','Free intraday history is limited','Independent trades: no portfolio CAGR or MDD','Fee estimate, no realistic spread/order-book simulation']}
-    with open(os.path.join(args.output,'summary.json'),'w') as f:json.dump(summary,f,indent=2)
-    print(json.dumps(summary,indent=2))
-if __name__=='__main__':main()
+    from run_backtest import main as run
+    run()
+
+
+if __name__ == '__main__':
+    main()
