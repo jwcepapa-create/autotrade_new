@@ -61,6 +61,9 @@ jobs:
       - name: Common-capital portfolio benchmark and monthly rebalance
         if: github.ref_name == 'research/strategy-lab'
         run: python research_portfolio.py
+      - name: True buy-hold versus crash-defense overlay stress research
+        if: github.ref_name == 'research/strategy-lab'
+        run: python research_defense_overlay.py
       - name: Save data and diagnostics even on failure
         if: always()
         uses: actions/upload-artifact@v4
