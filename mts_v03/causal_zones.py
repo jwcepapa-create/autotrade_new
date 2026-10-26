@@ -52,9 +52,10 @@ def zones_asof(df, asof, left=3, right=3, reaction_bars=9, tolerance=.0075):
         else:
             g=groups[-1]
             center=np.average([t[0] for t in g],weights=[t[1] for t in g])
-            (g if abs(o[0]-center)<=tol else groups.append([o]) or groups[-1]).append(o) if abs(o[0]-center)<=tol else None
-            if abs(o[0]-center)>tol:
-                continue
+            if abs(o[0]-center)<=tol:
+                g.append(o)
+            else:
+                groups.append([o])
     zones=[]
     for g in groups:
         weights=[o[1] for o in g]
