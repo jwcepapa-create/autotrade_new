@@ -3,7 +3,7 @@ import pandas as pd
 from mts_v03.breakout import signals
 
 def simulate_exit(df, ma5_fraction=.3, ma20_fraction=.5, cooldown=0,
-                  initial=10_000_000, fee=.001, slippage=.0005):
+                  initial=10_000_000, fee=.001, slippage=.0005, start_trading=None):
     if not 0 <= ma5_fraction <= 1 or not 0 <= ma20_fraction <= 1 or cooldown < 0:
         raise ValueError("Invalid exit parameters")
     x=signals(df).dropna(subset=["ma20","resistance_prior","support_prior"])
@@ -11,6 +11,8 @@ def simulate_exit(df, ma5_fraction=.3, ma20_fraction=.5, cooldown=0,
     trades=[]; equity=[]; exposure=0; turnover=0.
     for i in range(1,len(x)):
         prev,today=x.iloc[i-1],x.iloc[i]
+        if start_trading is not None and x.index[i] < pd.Timestamp(start_trading):
+            continue
         price=float(today.Open)
         if price<=0:
             raise ValueError("Invalid open")
