@@ -59,3 +59,21 @@ def test_cache_avoids_network_and_refreshes_adjustments(tmp_path):
     assert client.calls == 3
     assert info['cache_mode'].startswith('full_refresh')
     assert (d.adjClose == 5.5).all()
+
+
+def test_rate_limit_stops_remaining_symbols(monkeypatch, tmp_path):
+    import tiingo_data
+    class Limited:
+        calls = 0
+        rate_limits = []
+        rate_limited = False
+        def daily(self, ticker, start, end):
+            self.calls += 1
+            self.rate_limited = True
+            raise DataError('Tiingo HTTP 429: API quota/rate limit exceeded.')
+    client = Limited()
+    monkeypatch.setattr(tiingo_data, 'Client', lambda: client)
+    _, report = tiingo_data.collect('2016-01-01','2016-01-05',tmp_path/'data',tmp_path/'output',probe_intraday=True)
+    assert client.calls == 1
+    assert report['status'] == 'failed'
+    assert report['tickers']['SPY']['status'] == 'not_requested'

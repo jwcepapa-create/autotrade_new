@@ -30,6 +30,7 @@ class Client:
             raise DataError('TIINGO_API_KEY is missing; configure the Actions secret.')
         self.opener, self.sleeper = opener, sleeper
         self.calls = 0
+        self.rate_limited = False
         self.rate_limits = []
 
     def get(self, path, params):
@@ -54,6 +55,8 @@ class Client:
                 if status in (429, 500, 502, 503, 504) and attempt < 2:
                     self.sleeper(min(20, 2 ** (attempt + 1)))
                     continue
+                if status == 429:
+                    self.rate_limited = True
                 reasons = {401: 'invalid or missing API token', 403: 'account/plan permission denied',
                            404: 'ticker or endpoint unavailable', 429: 'API quota/rate limit exceeded'}
                 raise DataError(f'Tiingo HTTP {status}: {reasons.get(status, "provider request failed")}.') from None
@@ -197,7 +200,13 @@ def collect(start, end, cache_dir, output, refresh=False, probe_intraday=False):
             except DataError as exc:
                 report['tickers'][ticker] = {'status': 'failed', 'reason': str(exc)}
                 print(f'{ticker}: {exc}')
-        if probe_intraday:
+                if getattr(client, 'rate_limited', False):
+                    for pending in TICKERS:
+                        if pending not in report['tickers']:
+                            report['tickers'][pending] = {'status': 'not_requested',
+                                'reason': 'Stopped after API rate limit; retry in a later run.'}
+                    break
+        if probe_intraday and not getattr(client, 'rate_limited', False):
             try:
                 bars = client.get('iex/QQQ/prices', {'startDate': '2016-01-04',
                                   'endDate': '2016-01-05', 'resampleFreq': '5min'})
