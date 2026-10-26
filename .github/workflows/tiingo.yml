@@ -64,6 +64,11 @@ jobs:
       - name: True buy-hold versus crash-defense overlay stress research
         if: github.ref_name == 'research/strategy-lab'
         run: python research_defense_overlay.py
+      - name: ETF dotcom and global financial crisis historical stress
+        if: github.ref_name == 'research/strategy-lab'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: python research_historical_etf.py
       - name: Save data and diagnostics even on failure
         if: always()
         uses: actions/upload-artifact@v4
