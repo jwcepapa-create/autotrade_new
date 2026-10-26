@@ -1,0 +1,35 @@
+name: MTS v0.3 strategy B historical research
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate-and-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt pytest
+      - run: python -m pytest -q
+      - uses: actions/cache@v4
+        with:
+          path: data
+          key: tiingo-eod-v1-${{ github.ref_name }}-${{ github.run_id }}
+          restore-keys: |
+            tiingo-eod-v1-main-
+      - name: Fetch and validate Tiingo historical data
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: python tiingo_data.py
+      - name: Backtest strategy B (research only)
+        run: python research_mts_v03.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mts-v03-research-${{ github.run_id }}
+          path: results/
+          retention-days: 14
