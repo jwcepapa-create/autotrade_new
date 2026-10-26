@@ -55,6 +55,12 @@ jobs:
       - name: Research lab baseline parity B knobs and C D E backtests
         if: github.ref_name == 'research/strategy-lab'
         run: python research_strategy_lab.py
+      - name: Chronological B walk-forward research
+        if: github.ref_name == 'research/strategy-lab'
+        run: python research_b_walkforward.py
+      - name: Common-capital portfolio benchmark and monthly rebalance
+        if: github.ref_name == 'research/strategy-lab'
+        run: python research_portfolio.py
       - name: Save data and diagnostics even on failure
         if: always()
         uses: actions/upload-artifact@v4
