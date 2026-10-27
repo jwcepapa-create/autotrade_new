@@ -78,6 +78,9 @@ jobs:
       - name: Second generation G2 pullback and G5 retest research
         if: github.ref_name == 'research/strategy-lab'
         run: python research_g_second_generation.py
+      - name: Quarterly continuous and annual independent G strategy comparison
+        if: github.ref_name == 'research/strategy-lab'
+        run: python research_g_periodic_comparison.py
       - name: Save data and diagnostics even on failure
         if: always()
         uses: actions/upload-artifact@v4
