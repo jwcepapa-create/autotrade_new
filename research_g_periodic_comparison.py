@@ -36,19 +36,27 @@ def score(series):
             "bars":len(series)}
 
 def quarterly(x, curves):
-    """Quarter returns include first-session price moves and overnight gaps."""
+    """Quarterly equity changes anchored at prior period close.
+
+    Curves begin on the second trading session because execution uses the
+    previous completed bar; never index curves with dates absent from them.
+    """
     periods=x.index.to_period("Q").unique()
     rows=[]
     for p in periods:
         row={"quarter":str(p),"strategies":{}}
-        dates=x.index[x.index.to_period("Q")==p]
-        first=dates[0]
-        previous=x.index[x.index<first]
         for name,curve in curves.items():
-            segment=curve.loc[dates]
+            dates=curve.index[curve.index.to_period("Q")==p]
+            if len(dates)==0:
+                row["strategies"][name]=None
+                continue
+            first=dates[0]
+            previous=curve.index[curve.index<first]
             anchor=float(curve.loc[previous[-1]]) if len(previous) else float(INITIAL)
-            anchor_date=first-pd.Timedelta(nanoseconds=1)
-            marked=pd.concat([pd.Series([anchor],index=[anchor_date]),segment])
+            marked=pd.concat([
+                pd.Series([anchor],index=[first-pd.Timedelta(nanoseconds=1)]),
+                curve.loc[dates]
+            ])
             row["strategies"][name]=score(marked)
         bh=row["strategies"]["BUY_HOLD"]
         if bh is not None:
