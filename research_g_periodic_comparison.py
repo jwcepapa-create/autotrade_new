@@ -36,14 +36,20 @@ def score(series):
             "bars":len(series)}
 
 def quarterly(x, curves):
-    periods=x.index[1:].to_period("Q").unique()
+    """Quarter returns include first-session price moves and overnight gaps."""
+    periods=x.index.to_period("Q").unique()
     rows=[]
     for p in periods:
-        label=str(p)
-        row={"quarter":label,"strategies":{}}
+        row={"quarter":str(p),"strategies":{}}
+        dates=x.index[x.index.to_period("Q")==p]
+        first=dates[0]
+        previous=x.index[x.index<first]
         for name,curve in curves.items():
-            segment=curve.loc[curve.index.to_period("Q")==p]
-            row["strategies"][name]=score(segment)
+            segment=curve.loc[dates]
+            anchor=float(curve.loc[previous[-1]]) if len(previous) else float(INITIAL)
+            anchor_date=first-pd.Timedelta(nanoseconds=1)
+            marked=pd.concat([pd.Series([anchor],index=[anchor_date]),segment])
+            row["strategies"][name]=score(marked)
         bh=row["strategies"]["BUY_HOLD"]
         if bh is not None:
             for name,record in row["strategies"].items():
@@ -92,9 +98,9 @@ def annual_bh(x,year):
 def main():
     out={"research_only":True,"capital_per_ticker":INITIAL,
          "cost_per_side":COST,
-         "quarterly_method":"Continuous full-history trading, no forced quarterly liquidation; per-quarter marked equity first-close to last-close; first-session returns are not allocated to the quarter.",
+         "quarterly_method":"Continuous full-history trading, no forced quarterly liquidation; per-quarter equity anchored at previous quarter close or initial capital; first-session gaps and returns included.",
          "annual_method":"Independent 10M KRW fresh capital each calendar year; full prior history for indicators; no prior-year positions; first open of year executable using previous close; B&H buys first open.",
-         "warning":"Quarterly values omit each quarter's first open-to-close move and gap from preceding quarter. Do not compound these quarter returns to reconstruct full-period CAGR. Annual MDD includes initial capital. No FX; per-ticker independent sleeves, not F70 common-capital.",
+         "warning":"Quarterly returns include the full period boundary movement; do not conflate independently reset annual experiments with continuous-quarter compounding. Annual MDD includes initial capital. No FX; per-ticker independent sleeves, not F70 common-capital.",
          "results":{}}
     for ticker in TICKERS:
         raw=pd.read_csv(Path("data")/f"{ticker}.csv",index_col="Date",parse_dates=True)
