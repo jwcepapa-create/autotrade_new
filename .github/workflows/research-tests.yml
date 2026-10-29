@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - research/support-resistance
+      - research/strategy-lab
       - research/momentum-variants
   pull_request:
     branches: [main]

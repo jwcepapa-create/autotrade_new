@@ -9,7 +9,7 @@ on:
   schedule:
     - cron: '30 23 * * 1-5'
   push:
-    branches: ['feat/tiingo-backtest']
+    branches: ['feat/tiingo-backtest', 'research/strategy-lab']
 permissions:
   contents: read
 concurrency:
@@ -47,11 +47,49 @@ jobs:
       - name: Portfolio backtest (validated local CSV only)
         run: python run_backtest.py
       - name: Strategy B v0.3 breakout backtest (research only)
-        if: github.ref_name == 'research/support-resistance'
+        if: github.ref_name == 'research/support-resistance' || github.ref_name == 'research/strategy-lab'
         run: python research_mts_v03.py
       - name: Compare repeated vs edge-triggered exits (research only)
         if: github.ref_name == 'research/support-resistance'
         run: python research_exit_comparison.py
+      - name: Research lab baseline parity B knobs and C D E backtests
+        if: github.ref_name == 'research/strategy-lab'
+        run: python research_strategy_lab.py
+      - name: Chronological B walk-forward research
+        if: github.ref_name == 'research/strategy-lab'
+        run: python research_b_walkforward.py
+      - name: Common-capital portfolio benchmark and monthly rebalance
+        if: github.ref_name == 'research/strategy-lab'
+        run: python research_portfolio.py
+      - name: True buy-hold versus crash-defense overlay stress research
+        if: github.ref_name == 'research/strategy-lab'
+        run: python research_defense_overlay.py
+      - name: ETF dotcom and global financial crisis historical stress
+        if: github.ref_name == 'research/strategy-lab'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: python research_historical_etf.py
+      - name: G1-G5 RSI MACD stochastic zones and volume research
+        if: github.ref_name == 'research/strategy-lab'
+        run: python research_g_multisignal.py
+      - name: G2 MA and G5 breakout retest improvement research
+        if: github.ref_name == 'research/strategy-lab'
+        run: python research_g_improvements.py
+      - name: Second generation G2 pullback and G5 retest research
+        if: github.ref_name == 'research/strategy-lab'
+        run: python research_g_second_generation.py
+      - name: Quarterly continuous and annual independent G strategy comparison
+        if: github.ref_name == 'research/strategy-lab'
+        run: python research_g_periodic_comparison.py
+      - name: G2.9 monthly weekly trend pullback and volume breakout research
+        if: github.ref_name == 'research/strategy-lab'
+        run: python research_g29_multitimeframe.py
+      - name: G3.0 weekly monthly trend holding and reentry research
+        if: github.ref_name == 'research/strategy-lab'
+        run: python research_g30_trend_hold_reentry.py
+      - name: G3.1 support ladder exit hold partial research
+        if: github.ref_name == 'research/strategy-lab'
+        run: python research_g31_support_ladder.py
       - name: Save data and diagnostics even on failure
         if: always()
         uses: actions/upload-artifact@v4
