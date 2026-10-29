@@ -87,6 +87,9 @@ jobs:
       - name: G3.0 weekly monthly trend holding and reentry research
         if: github.ref_name == 'research/strategy-lab'
         run: python research_g30_trend_hold_reentry.py
+      - name: G3.1 support ladder exit hold partial research
+        if: github.ref_name == 'research/strategy-lab'
+        run: python research_g31_support_ladder.py
       - name: Save data and diagnostics even on failure
         if: always()
         uses: actions/upload-artifact@v4
