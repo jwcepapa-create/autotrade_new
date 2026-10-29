@@ -81,6 +81,9 @@ jobs:
       - name: Quarterly continuous and annual independent G strategy comparison
         if: github.ref_name == 'research/strategy-lab'
         run: python research_g_periodic_comparison.py
+      - name: G2.9 monthly weekly trend pullback and volume breakout research
+        if: github.ref_name == 'research/strategy-lab'
+        run: python research_g29_multitimeframe.py
       - name: Save data and diagnostics even on failure
         if: always()
         uses: actions/upload-artifact@v4
