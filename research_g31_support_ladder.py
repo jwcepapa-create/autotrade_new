@@ -31,7 +31,7 @@ def simulate(x,variant):
     cash=float(CAPITAL);shares=0.;orders=0
     # Three tiers are defined relative to the FIRST entry support, not
     # recomputed from future price action or reset on each bar.
-    levels=None;filled=[False]*3;entry_spend=0.; realized=0.
+    levels=None;filled=[False]*3;cost_basis=0.; realized=0.
     curve=[];events=[]
     for i in range(1,len(x)):
         prev=i-1
@@ -44,7 +44,7 @@ def simulate(x,variant):
         if levels is None and np.isfinite(sup) and close<=sup*1.025 and close>=sup*.975:
             levels=(sup,sup*.91,sup*.78)
             filled=[False]*3
-            entry_spend=0.
+            cost_basis=0.
         if levels is not None:
             last=levels[2]
             broken=close<last*.985
@@ -57,6 +57,7 @@ def simulate(x,variant):
                     qty=shares*.30
                 else:qty=0.
                 if qty>0:
+                    fraction=qty/shares;cost_basis*=1-fraction
                     cash+=qty*op*(1-COST);shares-=qty;orders+=1
                     events.append({"type":"risk_reduce" if variant.endswith("PARTIAL") else "stop","cycle":str(levels),"date":str(x.index[i].date()),"qty":qty})
                     if variant=="G3_1_D_EXIT":
@@ -71,15 +72,16 @@ def simulate(x,variant):
                         budget=min(CAPITAL*LEVEL_WEIGHTS[j],cash)
                         if budget>1:
                             qty=budget/(op*(1+COST))
-                            shares+=qty;cash-=budget;entry_spend+=budget;orders+=1;filled[j]=True
+                            shares+=qty;cash-=budget;cost_basis+=budget;orders+=1;filled[j]=True
                             events.append({"type":"buy","cycle":str(levels),"date":str(x.index[i].date()),"tier":j+1})
                         break
             # Confirmed resistance profit-taking; cannot sell below average cost as "profit".
-            avg_cost=(entry_spend/shares) if shares>0 else float("inf")
+            avg_cost=(cost_basis/shares) if shares>0 else float("inf")
             if shares>0 and np.isfinite(res) and close>=res*.995 and op>avg_cost:
                 # First resistance: 30%; subsequent confirmed resistance: 50% of remainder.
                 sells=sum(e["type"]=="profit" and e["cycle"]==str(levels) for e in events)
                 qty=shares*(.30 if sells==0 else .50)
+                fraction=qty/shares;cost_basis*=1-fraction
                 cash+=qty*op*(1-COST);shares-=qty;orders+=1
                 events.append({"type":"profit","cycle":str(levels),"date":str(x.index[i].date())})
             if shares<1e-8 and all(filled):
