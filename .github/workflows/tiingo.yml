@@ -84,6 +84,9 @@ jobs:
       - name: G2.9 monthly weekly trend pullback and volume breakout research
         if: github.ref_name == 'research/strategy-lab'
         run: python research_g29_multitimeframe.py
+      - name: G3.0 weekly monthly trend holding and reentry research
+        if: github.ref_name == 'research/strategy-lab'
+        run: python research_g30_trend_hold_reentry.py
       - name: Save data and diagnostics even on failure
         if: always()
         uses: actions/upload-artifact@v4
