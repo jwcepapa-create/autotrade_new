@@ -1,0 +1,612 @@
+{
+  "status": "completed",
+  "source": "Tiingo adjusted daily ETF closes",
+  "tickers": [
+    "QQQ",
+    "VOO",
+    "MGK",
+    "SOXX",
+    "SMH",
+    "QLD",
+    "USD",
+    "TQQQ",
+    "SOXL"
+  ],
+  "common_sessions": 2731,
+  "start_requested": "2016-01-01",
+  "end_requested": "2026-11-11",
+  "assumptions": {
+    "signals": "QQQ close drawdown vs running all-time high, applied next session",
+    "trading": "Close-to-close return approximation, no live orders",
+    "cost_bps_per_turnover": 30.0,
+    "limitations": [
+      "Leverage ETFs reset daily and can suffer path-dependent decay.",
+      "ETF adjusted-close total-return proxy, not exact fill simulation.",
+      "No pre-inception synthetic leveraged returns; intersection shortens history.",
+      "Historical constituents and survivorship/selection biases remain.",
+      "No tax, FX fluctuations, borrowing, or intraday slippage model."
+    ]
+  },
+  "v5_strategies": {
+    "fast": {
+      "start": "2016-01-04",
+      "end": "2026-11-11",
+      "total_return": 5.767410601292498,
+      "cagr": 0.1926598697381845,
+      "mdd": -0.3232965472210423,
+      "sharpe": 0.9059432504912875,
+      "turnover": 62.1002357058398,
+      "rebalances": 179,
+      "transaction_cost_krw": 4609935.427284836,
+      "ending_krw": 67674106.01292498,
+      "average_invested_fraction": 0.8577623657813475,
+      "parameters": {
+        "variant": "fast",
+        "fee_bps": 30.0,
+        "execution": "next close proxy",
+        "volume_signal": false,
+        "lookahead": false
+      },
+      "regimes": {
+        "covid_2020": {
+          "start": "2020-02-19",
+          "end": "2020-06-30",
+          "return": -0.06726688602033037,
+          "mdd_within_window": -0.31511233085973434
+        },
+        "bear_2022": {
+          "start": "2022-01-03",
+          "end": "2022-12-30",
+          "return": -0.3135961070107245,
+          "mdd_within_window": -0.3216093853614914
+        },
+        "recent_2023_2026": {
+          "start": "2023-01-03",
+          "end": "2026-11-11",
+          "return": 1.9809627596841812,
+          "mdd_within_window": -0.2299596971637412
+        }
+      }
+    },
+    "confirmed": {
+      "start": "2016-01-04",
+      "end": "2026-11-11",
+      "total_return": 5.9575434506309835,
+      "cagr": 0.19570868935070895,
+      "mdd": -0.3151123308597338,
+      "sharpe": 0.9305981154433487,
+      "turnover": 46.206379448463835,
+      "rebalances": 122,
+      "transaction_cost_krw": 3670157.4372069202,
+      "ending_krw": 69575434.50630984,
+      "average_invested_fraction": 0.8456957327935974,
+      "parameters": {
+        "variant": "confirmed",
+        "fee_bps": 30.0,
+        "execution": "next close proxy",
+        "volume_signal": false,
+        "lookahead": false
+      },
+      "regimes": {
+        "covid_2020": {
+          "start": "2020-02-19",
+          "end": "2020-06-30",
+          "return": -0.1041242304040001,
+          "mdd_within_window": -0.3151123308597338
+        },
+        "bear_2022": {
+          "start": "2022-01-03",
+          "end": "2022-12-30",
+          "return": -0.25183855857485304,
+          "mdd_within_window": -0.27278018247030567
+        },
+        "recent_2023_2026": {
+          "start": "2023-01-03",
+          "end": "2026-11-11",
+          "return": 1.8597956332589392,
+          "mdd_within_window": -0.2299596971637412
+        }
+      }
+    },
+    "volatility": {
+      "start": "2016-01-04",
+      "end": "2026-11-11",
+      "total_return": 5.902931021508783,
+      "cagr": 0.19484078884616474,
+      "mdd": -0.28929766353862185,
+      "sharpe": 0.9400921652366845,
+      "turnover": 42.84443495932902,
+      "rebalances": 124,
+      "transaction_cost_krw": 3496997.606089764,
+      "ending_krw": 69029310.21508783,
+      "average_invested_fraction": 0.8435229678343077,
+      "parameters": {
+        "variant": "volatility",
+        "fee_bps": 30.0,
+        "execution": "next close proxy",
+        "volume_signal": false,
+        "lookahead": false
+      },
+      "regimes": {
+        "covid_2020": {
+          "start": "2020-02-19",
+          "end": "2020-06-30",
+          "return": -0.08076226838172929,
+          "mdd_within_window": -0.28929766353862185
+        },
+        "bear_2022": {
+          "start": "2022-01-03",
+          "end": "2022-12-30",
+          "return": -0.2518385585748525,
+          "mdd_within_window": -0.2727801824703052
+        },
+        "recent_2023_2026": {
+          "start": "2023-01-03",
+          "end": "2026-11-11",
+          "return": 1.8092744778268872,
+          "mdd_within_window": -0.22995969716374043
+        }
+      }
+    }
+  },
+  "v4_strategies": {
+    "hybrid_recovery_cap10": {
+      "start": "2016-01-04",
+      "end": "2026-11-11",
+      "total_return": 6.494132033411863,
+      "cagr": 0.20392207522270467,
+      "mdd": -0.31511233085973434,
+      "sharpe": 0.9467879461098035,
+      "turnover": 39.13529323146197,
+      "rebalances": 99,
+      "transaction_cost_krw": 3290854.4691616893,
+      "ending_krw": 74941320.33411863,
+      "average_invested_fraction": 0.8596530461479,
+      "parameters": {
+        "variant": "recovery",
+        "cap3": 0.1,
+        "cap2": 0.25,
+        "execution": "next close proxy",
+        "fee_bps": 30.0
+      },
+      "regimes": {
+        "covid_2020": {
+          "start": "2020-02-19",
+          "end": "2020-06-30",
+          "return": -0.10412423040400076,
+          "mdd_within_window": -0.31511233085973434
+        },
+        "bear_2022": {
+          "start": "2022-01-03",
+          "end": "2022-12-30",
+          "return": -0.2702642218243537,
+          "mdd_within_window": -0.29552031351115127
+        },
+        "recent_2023_2026": {
+          "start": "2023-01-03",
+          "end": "2026-11-11",
+          "return": 2.0196458737042002,
+          "mdd_within_window": -0.22995969716374098
+        }
+      }
+    },
+    "hybrid_strict_cap10": {
+      "start": "2016-01-04",
+      "end": "2026-11-11",
+      "total_return": 6.279101502905725,
+      "cagr": 0.20069686655687335,
+      "mdd": -0.315112330859734,
+      "sharpe": 0.9471243484522028,
+      "turnover": 36.15304507484001,
+      "rebalances": 84,
+      "transaction_cost_krw": 2986095.667118406,
+      "ending_krw": 72791015.02905725,
+      "average_invested_fraction": 0.8434029424668091,
+      "parameters": {
+        "variant": "strict",
+        "cap3": 0.1,
+        "cap2": 0.25,
+        "execution": "next close proxy",
+        "fee_bps": 30.0
+      },
+      "regimes": {
+        "covid_2020": {
+          "start": "2020-02-19",
+          "end": "2020-06-30",
+          "return": -0.1041242304040001,
+          "mdd_within_window": -0.315112330859734
+        },
+        "bear_2022": {
+          "start": "2022-01-03",
+          "end": "2022-12-30",
+          "return": -0.22087708252085114,
+          "mdd_within_window": -0.25323877700511843
+        },
+        "recent_2023_2026": {
+          "start": "2023-01-03",
+          "end": "2026-11-11",
+          "return": 1.8681024786018874,
+          "mdd_within_window": -0.2299596971637411
+        }
+      }
+    },
+    "hybrid_balanced_cap10": {
+      "start": "2016-01-04",
+      "end": "2026-11-11",
+      "total_return": 6.207754642785132,
+      "cagr": 0.1996076176962609,
+      "mdd": -0.31511233085973445,
+      "sharpe": 0.9414186697318625,
+      "turnover": 38.53637058895954,
+      "rebalances": 96,
+      "transaction_cost_krw": 3125799.1741998256,
+      "ending_krw": 72077546.42785132,
+      "average_invested_fraction": 0.8459098028665533,
+      "parameters": {
+        "variant": "balanced",
+        "cap3": 0.1,
+        "cap2": 0.25,
+        "execution": "next close proxy",
+        "fee_bps": 30.0
+      },
+      "regimes": {
+        "covid_2020": {
+          "start": "2020-02-19",
+          "end": "2020-06-30",
+          "return": -0.10412423040400098,
+          "mdd_within_window": -0.31511233085973445
+        },
+        "bear_2022": {
+          "start": "2022-01-03",
+          "end": "2022-12-30",
+          "return": -0.23398857228396797,
+          "mdd_within_window": -0.26706126380199124
+        },
+        "recent_2023_2026": {
+          "start": "2023-01-03",
+          "end": "2026-11-11",
+          "return": 1.8916951243818994,
+          "mdd_within_window": -0.2299596971637411
+        }
+      }
+    },
+    "hybrid_recovery_no3x": {
+      "start": "2016-01-04",
+      "end": "2026-11-11",
+      "total_return": 6.50014266558674,
+      "cagr": 0.2040110149319998,
+      "mdd": -0.31511233085973434,
+      "sharpe": 0.952433083336841,
+      "turnover": 38.11633487070266,
+      "rebalances": 99,
+      "transaction_cost_krw": 3211343.467351905,
+      "ending_krw": 75001426.6558674,
+      "average_invested_fraction": 0.8575541924898648,
+      "parameters": {
+        "variant": "recovery",
+        "cap3": 0.0,
+        "cap2": 0.25,
+        "execution": "next close proxy",
+        "fee_bps": 30.0
+      },
+      "regimes": {
+        "covid_2020": {
+          "start": "2020-02-19",
+          "end": "2020-06-30",
+          "return": -0.10412423040400076,
+          "mdd_within_window": -0.31511233085973434
+        },
+        "bear_2022": {
+          "start": "2022-01-03",
+          "end": "2022-12-30",
+          "return": -0.2702642218243537,
+          "mdd_within_window": -0.29552031351115127
+        },
+        "recent_2023_2026": {
+          "start": "2023-01-03",
+          "end": "2026-11-11",
+          "return": 2.0220677660013067,
+          "mdd_within_window": -0.22995969716374065
+        }
+      }
+    }
+  },
+  "v3_strategies": {
+    "trend_daily_weekly_cap10": {
+      "start": "2016-01-04",
+      "end": "2026-11-11",
+      "total_return": 6.254690313608573,
+      "cagr": 0.2003252772973294,
+      "mdd": -0.315112330859734,
+      "sharpe": 0.9477989276486531,
+      "turnover": 35.65202452621585,
+      "rebalances": 84,
+      "transaction_cost_krw": 2939782.561891077,
+      "ending_krw": 72546903.13608573,
+      "parameters": {
+        "cap_3x": 0.1,
+        "cap_2x": 0.2,
+        "weekly_filter": true,
+        "execution": "next close proxy"
+      },
+      "regimes": {
+        "covid_2020": {
+          "start": "2020-02-19",
+          "end": "2020-06-30",
+          "return": -0.1041242304040001,
+          "mdd_within_window": -0.315112330859734
+        },
+        "bear_2022": {
+          "start": "2022-01-03",
+          "end": "2022-12-30",
+          "return": -0.22087708252085114,
+          "mdd_within_window": -0.25323877700511843
+        },
+        "recent_2023_2026": {
+          "start": "2023-01-03",
+          "end": "2026-11-11",
+          "return": 1.8584840122979305,
+          "mdd_within_window": -0.2299596971637411
+        }
+      }
+    },
+    "trend_daily_only_cap10": {
+      "start": "2016-01-04",
+      "end": "2026-11-11",
+      "total_return": 5.82751136289929,
+      "cagr": 0.19363191432583604,
+      "mdd": -0.315112330859734,
+      "sharpe": 0.9144203930303795,
+      "turnover": 44.66882254313377,
+      "rebalances": 102,
+      "transaction_cost_krw": 3421068.274792817,
+      "ending_krw": 68275113.6289929,
+      "parameters": {
+        "cap_3x": 0.1,
+        "cap_2x": 0.2,
+        "weekly_filter": false,
+        "execution": "next close proxy"
+      },
+      "regimes": {
+        "covid_2020": {
+          "start": "2020-02-19",
+          "end": "2020-06-30",
+          "return": -0.07335697577908329,
+          "mdd_within_window": -0.315112330859734
+        },
+        "bear_2022": {
+          "start": "2022-01-03",
+          "end": "2022-12-30",
+          "return": -0.2719153179339062,
+          "mdd_within_window": -0.3033505148744622
+        },
+        "recent_2023_2026": {
+          "start": "2023-01-03",
+          "end": "2026-11-11",
+          "return": 1.8915793828031147,
+          "mdd_within_window": -0.2308839681278575
+        }
+      }
+    },
+    "trend_daily_weekly_cap0": {
+      "start": "2016-01-04",
+      "end": "2026-11-11",
+      "total_return": 6.259546434604204,
+      "cagr": 0.2003992879488916,
+      "mdd": -0.315112330859734,
+      "sharpe": 0.9531914872549043,
+      "turnover": 34.63910008522852,
+      "rebalances": 84,
+      "transaction_cost_krw": 2859520.323183496,
+      "ending_krw": 72595464.34604204,
+      "parameters": {
+        "cap_3x": 0.0,
+        "cap_2x": 0.2,
+        "weekly_filter": true,
+        "execution": "next close proxy"
+      },
+      "regimes": {
+        "covid_2020": {
+          "start": "2020-02-19",
+          "end": "2020-06-30",
+          "return": -0.1041242304040001,
+          "mdd_within_window": -0.315112330859734
+        },
+        "bear_2022": {
+          "start": "2022-01-03",
+          "end": "2022-12-30",
+          "return": -0.22087708252085114,
+          "mdd_within_window": -0.25323877700511843
+        },
+        "recent_2023_2026": {
+          "start": "2023-01-03",
+          "end": "2026-11-11",
+          "return": 1.8603974150246816,
+          "mdd_within_window": -0.2299596971637411
+        }
+      }
+    }
+  },
+  "v2_strategies": {
+    "original_daily": {
+      "start": "2016-01-04",
+      "end": "2026-11-11",
+      "total_return": 12.32160330884316,
+      "cagr": 0.26945886526040486,
+      "mdd": -0.4817627982746351,
+      "sharpe": 0.9301363386214291,
+      "turnover": 69.05214825621324,
+      "rebalances": 2730,
+      "transaction_cost_krw": 8728312.27585699,
+      "ending_krw": 133216033.0884316,
+      "rebalance_policy": "daily",
+      "regimes": {
+        "covid_2020": {
+          "start": "2020-02-19",
+          "end": "2020-06-30",
+          "return": 0.07365930181725111,
+          "mdd_within_window": -0.3446571300943795
+        },
+        "bear_2022": {
+          "start": "2022-01-03",
+          "end": "2022-12-30",
+          "return": -0.38083273119246164,
+          "mdd_within_window": -0.48051685971472247
+        },
+        "recent_2023_2026": {
+          "start": "2023-01-03",
+          "end": "2026-11-11",
+          "return": 3.3138982734959894,
+          "mdd_within_window": -0.289642298110795
+        }
+      }
+    },
+    "managed_daily": {
+      "start": "2016-01-04",
+      "end": "2026-11-11",
+      "total_return": 11.052356160064022,
+      "cagr": 0.25780086798091584,
+      "mdd": -0.4566027712929882,
+      "sharpe": 0.9194229221486959,
+      "turnover": 64.1711299226419,
+      "rebalances": 2730,
+      "transaction_cost_krw": 7764193.554527414,
+      "ending_krw": 120523561.60064022,
+      "rebalance_policy": "daily",
+      "regimes": {
+        "covid_2020": {
+          "start": "2020-02-19",
+          "end": "2020-06-30",
+          "return": 0.07365930181725111,
+          "mdd_within_window": -0.3446571300943795
+        },
+        "bear_2022": {
+          "start": "2022-01-03",
+          "end": "2022-12-30",
+          "return": -0.4129399841696547,
+          "mdd_within_window": -0.45529634335160996
+        },
+        "recent_2023_2026": {
+          "start": "2023-01-03",
+          "end": "2026-11-11",
+          "return": 3.09362249224195,
+          "mdd_within_window": -0.2896422981107952
+        }
+      }
+    },
+    "original_threshold": {
+      "start": "2016-01-04",
+      "end": "2026-11-11",
+      "total_return": 13.130555911123919,
+      "cagr": 0.27637331466966075,
+      "mdd": -0.4724183857154205,
+      "sharpe": 0.9424948520966736,
+      "turnover": 54.760175190785404,
+      "rebalances": 138,
+      "transaction_cost_krw": 6738117.036914576,
+      "ending_krw": 141305559.1112392,
+      "rebalance_policy": "threshold",
+      "regimes": {
+        "covid_2020": {
+          "start": "2020-02-19",
+          "end": "2020-06-30",
+          "return": 0.07376235315832824,
+          "mdd_within_window": -0.3451205100152934
+        },
+        "bear_2022": {
+          "start": "2022-01-03",
+          "end": "2022-12-30",
+          "return": -0.37389697483304496,
+          "mdd_within_window": -0.4711120965804605
+        },
+        "recent_2023_2026": {
+          "start": "2023-01-03",
+          "end": "2026-11-11",
+          "return": 3.4264263996333657,
+          "mdd_within_window": -0.2881419996499033
+        }
+      }
+    },
+    "managed_threshold": {
+      "start": "2016-01-04",
+      "end": "2026-11-11",
+      "total_return": 11.745319010713827,
+      "cagr": 0.2642966218451208,
+      "mdd": -0.4479951938500395,
+      "sharpe": 0.9308131644331662,
+      "turnover": 50.288191845410104,
+      "rebalances": 138,
+      "transaction_cost_krw": 5922233.616935273,
+      "ending_krw": 127453190.10713826,
+      "rebalance_policy": "threshold",
+      "regimes": {
+        "covid_2020": {
+          "start": "2020-02-19",
+          "end": "2020-06-30",
+          "return": 0.07376235315832824,
+          "mdd_within_window": -0.3451205100152934
+        },
+        "bear_2022": {
+          "start": "2022-01-03",
+          "end": "2022-12-30",
+          "return": -0.4081556155482243,
+          "mdd_within_window": -0.44662843302821453
+        },
+        "recent_2023_2026": {
+          "start": "2023-01-03",
+          "end": "2026-11-11",
+          "return": 3.200549841123375,
+          "mdd_within_window": -0.2881419996499034
+        }
+      }
+    }
+  },
+  "strategies": {
+    "drawdown_original": {
+      "start": "2016-01-04",
+      "end": "2026-11-11",
+      "total_return": 12.978889035055088,
+      "cagr": 0.2751048128961977,
+      "mdd": -0.47838565851781223,
+      "sharpe": 0.9445648813260161,
+      "turnover": 52.999999999999886,
+      "rebalances": 138,
+      "ending_krw": 139788890.3505509
+    },
+    "drawdown_risk_managed": {
+      "start": "2016-01-04",
+      "end": "2026-11-11",
+      "total_return": 11.628769788687084,
+      "cagr": 0.26322689292927803,
+      "mdd": -0.45326975904030997,
+      "sharpe": 0.9338742365922924,
+      "turnover": 48.599999999999916,
+      "rebalances": 138,
+      "ending_krw": 126287697.88687083
+    },
+    "base_1x_only": {
+      "start": "2016-01-04",
+      "end": "2026-11-11",
+      "total_return": 9.536979468203015,
+      "cagr": 0.24232401607113752,
+      "mdd": -0.37933440842764876,
+      "sharpe": 0.977890170162088,
+      "turnover": 1.0,
+      "rebalances": 1,
+      "ending_krw": 105369794.68203014
+    },
+    "qqq_buy_hold": {
+      "start": "2016-01-04",
+      "end": "2026-11-11",
+      "total_return": 5.790946088734202,
+      "cagr": 0.19304145291994868,
+      "mdd": -0.35122525674818383,
+      "sharpe": 0.9051608575433,
+      "turnover": 1.0,
+      "rebalances": 1,
+      "ending_krw": 67909460.88734202
+    }
+  },
+  "github_run_id": "43258419121",
+  "github_run_url": "https://github.com/jwcepapa-create/autotrade_new/actions/runs/43258419121"
+}
