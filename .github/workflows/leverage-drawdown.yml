@@ -1,5 +1,8 @@
 name: Leverage drawdown ETF research
 on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/leverage-drawdown.yml']
   schedule:
     - cron: '20 1 * * 1'
   workflow_dispatch:
