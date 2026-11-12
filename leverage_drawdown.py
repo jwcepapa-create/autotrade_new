@@ -111,8 +111,22 @@ def main():
     common = prices.dropna()
     if len(common) < 252:
         raise SystemExit("Insufficient common ETF history; no results fabricated")
-    # QQQ is the reference for drawdown thresholds. Base-only comparator.
-    base_only = common.copy()
+    # Compare the original accounting to holdings-based execution accounting.
+    from leverage_v2 import simulate_v2, regime_metrics
+    v2 = {}
+    v2_curves = {}
+    v2_events = {}
+    for name, managed, policy in [
+        ('original_daily', False, 'daily'),
+        ('managed_daily', True, 'daily'),
+        ('original_threshold', False, 'threshold'),
+        ('managed_threshold', True, 'threshold'),
+    ]:
+        v2[name], v2_curves[name], v2_events[name] = simulate_v2(
+            common, managed=managed, fee_bps=args.fee_bps, rebalance=policy)
+        v2[name]['regimes'] = regime_metrics(v2_curves[name])
+        v2_curves[name].to_csv(output / f'{name}_equity.csv', index_label='Date')
+        v2_events[name].to_csv(output / f'{name}_rebalance_events.csv', index=False)
     result = {
         "status": "completed",
         "source": "Tiingo adjusted daily ETF closes",
@@ -132,6 +146,7 @@ def main():
                 "No tax, FX fluctuations, borrowing, or intraday slippage model.",
             ],
         },
+        "v2_strategies": v2,
         "strategies": {
             "drawdown_original": simulate(common, fee_bps=args.fee_bps),
             "drawdown_risk_managed": simulate(common, managed=True, fee_bps=args.fee_bps),
