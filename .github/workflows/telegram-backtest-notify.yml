@@ -65,7 +65,14 @@ jobs:
               from pathlib import Path
 
               is_leverage = os.environ.get("WORKFLOW_NAME") == "Leverage drawdown ETF research"
-              path = Path(os.environ["LEVERAGE_SUMMARY_FILE"] if is_leverage else os.environ["SUMMARY_FILE"])
+              root = Path("downloaded-results")
+              candidates = sorted(root.rglob("summary.json")) if root.is_dir() else []
+              if is_leverage:
+                  # actions/download-artifact may strip the uploaded root directory.
+                  candidates = [p for p in candidates if "results" not in p.parts]
+              else:
+                  candidates = [p for p in candidates if "leverage_results" not in p.parts]
+              path = candidates[0] if len(candidates) == 1 else root / "__missing_summary__.json"
               try:
                   if not path.is_file():
                       raise FileNotFoundError("summary.json missing from downloaded artifact")
