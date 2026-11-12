@@ -1,0 +1,102 @@
+name: V2 cross-market ETF validation
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/v2-cross-market.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '40 1 * * 1'
+permissions:
+  contents: write
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt pytest
+      - run: python -m pytest -q tests/test_cross_market_v2.py
+      - name: Backtest six markets with Tiingo
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          python cross_market_v2.py --end "$(date -u -d 'yesterday' +%F)"
+      - name: Upload all diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v2-cross-market-${{ github.run_id }}
+          path: cross_market_results/
+          if-no-files-found: warn
+      - name: Publish latest summary
+        if: success() && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 - <<'PY'
+          import base64, json, os, urllib.error, urllib.request
+          from pathlib import Path
+          report = json.loads(Path("cross_market_results/summary.json").read_text())
+          if report["status"] != "completed":
+              raise SystemExit("No completed results")
+          report["github_run_url"] = f"https://github.com/{os.environ['REPO']}/actions/runs/{os.environ['RUN_ID']}"
+          url = f"https://api.github.com/repos/{os.environ['REPO']}/contents/research_reports/latest_v2_cross_market.json"
+          headers = {"Authorization": "Bearer " + os.environ["GH_TOKEN"], "Accept": "application/vnd.github+json"}
+          sha = None
+          try:
+              with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=20) as resp:
+                  sha = json.load(resp)["sha"]
+          except urllib.error.HTTPError as exc:
+              if exc.code != 404: raise
+          body = {"message": "research: publish latest V2 cross-market validation",
+                  "content": base64.b64encode(json.dumps(report, indent=2).encode()).decode(), "branch": "main"}
+          if sha: body["sha"] = sha
+          req = urllib.request.Request(url, data=json.dumps(body).encode(), headers=headers, method="PUT")
+          with urllib.request.urlopen(req, timeout=20) as resp:
+              print("Published", resp.status)
+          PY
+      - name: Telegram result alert
+        if: always()
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          JOB_STATUS: ${{ job.status }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.parse, urllib.request
+          from pathlib import Path
+          token, chat = os.getenv("TELEGRAM_BOT_TOKEN"), os.getenv("TELEGRAM_CHAT_ID")
+          if not token or not chat:
+              print("Telegram secrets missing; skipped")
+              raise SystemExit(0)
+          path = Path("cross_market_results/summary.json")
+          ok = os.getenv("JOB_STATUS") == "success" and path.exists()
+          if ok:
+              report = json.loads(path.read_text())
+              lines = ["V2 cross-market validation completed"]
+              for name, market in report["markets"].items():
+                  if market["status"] == "completed":
+                      m = market["strategies"]["v2"]
+                      lines.append(f"{name}: CAGR {m['cagr']:.2%}, MDD {m['mdd']:.2%}")
+                  else:
+                      lines.append(f"{name}: unavailable")
+          else:
+              lines = ["V2 cross-market validation failed"]
+          lines.append(os.environ["RUN_URL"])
+          data = urllib.parse.urlencode({"chat_id": chat, "text": "\n".join(lines)}).encode()
+          with urllib.request.urlopen(urllib.request.Request(
+              "https://api.telegram.org/bot" + token + "/sendMessage",
+              data=data, method="POST"), timeout=20) as response:
+              result = json.load(response)
+          if not result.get("ok"):
+              raise RuntimeError("Telegram delivery rejected")
+          print("Telegram sent")
+          PY
