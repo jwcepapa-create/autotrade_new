@@ -2,7 +2,7 @@ name: Telegram backtest result notification
 
 on:
   workflow_run:
-    workflows: ["Tiingo research backtest"]
+    workflows: ["Tiingo research backtest", "Leverage drawdown ETF research"]
     types: [completed]
 
 permissions:
@@ -24,7 +24,7 @@ jobs:
         with:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ github.token }}
-          pattern: tiingo-research-*
+          pattern: '*'
           path: downloaded-results
           merge-multiple: true
       - name: Send Telegram notification
@@ -38,6 +38,8 @@ jobs:
           RUN_ID: ${{ github.event.workflow_run.id }}
           GH_REPOSITORY: ${{ github.repository }}
           SUMMARY_FILE: downloaded-results/results/summary.json
+          LEVERAGE_SUMMARY_FILE: downloaded-results/leverage_results/summary.json
+          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
         run: |
           python3 - <<'PY'
           import json
@@ -52,7 +54,7 @@ jobs:
           status = os.environ.get("RUN_CONCLUSION", "unknown")
           icon = "✅" if status == "success" else "❌" if status == "failure" else "ℹ️"
           message = (
-              f"{icon} Autotrade_new 백테스트 {status}\n"
+              f"{icon} Autotrade_new {os.environ.get('WORKFLOW_NAME', '백테스트')} {status}\n"
               f"브랜치: {os.environ.get('RUN_BRANCH', '')[:100]}\n"
               f"실행 유형: {os.environ.get('RUN_EVENT', '')[:40]}\n"
           )
@@ -62,36 +64,54 @@ jobs:
           if status == "success":
               from pathlib import Path
 
-              path = Path(os.environ["SUMMARY_FILE"])
+              is_leverage = os.environ.get("WORKFLOW_NAME") == "Leverage drawdown ETF research"
+              path = Path(os.environ["LEVERAGE_SUMMARY_FILE"] if is_leverage else os.environ["SUMMARY_FILE"])
               try:
                   if not path.is_file():
                       raise FileNotFoundError("summary.json missing from downloaded artifact")
                   summary = json.loads(path.read_text(encoding="utf-8"))
                   if summary.get("status") != "completed":
                       raise ValueError("Backtest status is not completed")
-                  metrics = summary["metrics"]
-                  swing = metrics["swing"]
-                  hold = metrics["qqq_buy_hold"]
-                  config = summary["config"]
+                  if is_leverage:
+                      strategies = summary["strategies"]
+                      message += f"기간: {summary['strategies']['drawdown_original']['start']} ~ {summary['strategies']['drawdown_original']['end']}\n"
+                      for key, label in [
+                          ("drawdown_original", "레버리지 원안"),
+                          ("drawdown_risk_managed", "위험관리형"),
+                          ("base_1x_only", "1배 ETF"),
+                          ("qqq_buy_hold", "QQQ B&H"),
+                      ]:
+                          m = strategies[key]
+                          message += (
+                              f"{label}: CAGR {float(m['cagr'])*100:+.2f}%, "
+                              f"MDD {float(m['mdd'])*100:.2f}%, "
+                              f"총수익 {float(m['total_return'])*100:+.2f}%\n"
+                          )
+                      message += "주의: 실제 ETF 가격 기반 연구, 실거래 아님\n"
+                  else:
+                      metrics = summary["metrics"]
+                      swing = metrics["swing"]
+                      hold = metrics["qqq_buy_hold"]
+                      config = summary["config"]
 
-                  def pct(value):
-                      return "N/A" if value is None else f"{float(value) * 100:+.2f}%"
+                      def pct(value):
+                          return "N/A" if value is None else f"{float(value) * 100:+.2f}%"
 
-                  def num(value):
-                      return "N/A" if value is None else f"{float(value):.2f}"
+                      def num(value):
+                          return "N/A" if value is None else f"{float(value):.2f}"
 
-                  message += (
-                      f"검증 기간: {config['start']} ~ {config['end']}\n"
-                      f"전략 수익률: {pct(swing['total_return'])}\n"
-                      f"전략 CAGR: {pct(swing['cagr'])}\n"
-                      f"전략 MDD: {pct(swing['mdd'])}\n"
-                      f"전략 Sharpe: {num(swing['sharpe_ratio'])}\n"
-                      f"전략 거래 수: {int(swing['trades'])}\n"
-                      f"QQQ B&H 수익률: {pct(hold['total_return'])}\n"
-                      f"QQQ B&H CAGR: {pct(hold['cagr'])}\n"
-                      f"QQQ B&H MDD: {pct(hold['mdd'])}\n"
-                      "주의: 수정주가 기반, 고정환율 가정, 실거래 아님\n"
-                  )
+                      message += (
+                          f"검증 기간: {config['start']} ~ {config['end']}\n"
+                          f"전략 수익률: {pct(swing['total_return'])}\n"
+                          f"전략 CAGR: {pct(swing['cagr'])}\n"
+                          f"전략 MDD: {pct(swing['mdd'])}\n"
+                          f"전략 Sharpe: {num(swing['sharpe_ratio'])}\n"
+                          f"전략 거래 수: {int(swing['trades'])}\n"
+                          f"QQQ B&H 수익률: {pct(hold['total_return'])}\n"
+                          f"QQQ B&H CAGR: {pct(hold['cagr'])}\n"
+                          f"QQQ B&H MDD: {pct(hold['mdd'])}\n"
+                          "주의: 수정주가 기반, 고정환율 가정, 실거래 아님\n"
+                      )
               except (FileNotFoundError, ValueError, KeyError, TypeError,
                       json.JSONDecodeError, OSError) as exc:
                   message += f"성과 요약 파일 조회 실패 ({type(exc).__name__}); GitHub 결과 확인\n"
