@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r requirements.txt pytest
-      - run: python -m pytest -q tests/test_leverage_drawdown.py
+      - run: python -m pytest -q tests/test_leverage_drawdown.py tests/test_leverage_v2.py tests/test_leverage_v3.py
       - name: Run real-data leverage research
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}

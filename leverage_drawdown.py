@@ -146,7 +146,7 @@ def main():
                 "No tax, FX fluctuations, borrowing, or intraday slippage model.",
             ],
         },
-        "v2_strategies": v2,
+        "v3_strategies": v3,\n        "v2_strategies": v2,
         "strategies": {
             "drawdown_original": simulate(common, fee_bps=args.fee_bps),
             "drawdown_risk_managed": simulate(common, managed=True, fee_bps=args.fee_bps),
