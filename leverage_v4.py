@@ -57,7 +57,7 @@ def hybrid_targets(prices, variant="recovery", cap3=.10, cap2=.25):
 
 
 def simulate_v4(prices, variant="recovery", cap3=.10, cap2=.25,
-                fee_bps=30., initial=10_000_000):
+                fee_bps=30., initial=10_000_000, target_override=None):
     if not set(ALL).issubset(prices.columns):
         raise ValueError("Missing real ETF prices")
     p = prices.loc[:, ALL].dropna()
@@ -66,7 +66,9 @@ def simulate_v4(prices, variant="recovery", cap3=.10, cap2=.25,
     if not (0 <= cap3 <= .30 and 0 <= cap2 <= .30 and 0 <= fee_bps <= 100):
         raise ValueError("Invalid limits")
     tickers = BASE + DOUBLE + TRIPLE
-    targets = hybrid_targets(p, variant, cap3, cap2)
+    targets = target_override if target_override is not None else hybrid_targets(p, variant, cap3, cap2)
+    if len(targets) != len(p):
+        raise ValueError("Target length mismatch")
     holdings = {t: 0. for t in tickers}
     last_target = None
     nav = float(initial)
