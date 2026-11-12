@@ -127,6 +127,17 @@ def main():
         v2[name]['regimes'] = regime_metrics(v2_curves[name])
         v2_curves[name].to_csv(output / f'{name}_equity.csv', index_label='Date')
         v2_events[name].to_csv(output / f'{name}_rebalance_events.csv', index=False)
+    from leverage_v3 import simulate_v3
+    v3 = {}
+    for name, cap3, weekly in [
+        ("trend_daily_weekly_cap10", .10, True),
+        ("trend_daily_only_cap10", .10, False),
+        ("trend_daily_weekly_cap0", 0., True),
+    ]:
+        v3[name], curve = simulate_v3(
+            common, cap_3x=cap3, weekly_filter=weekly, fee_bps=args.fee_bps)
+        v3[name]["regimes"] = regime_metrics(curve)
+        curve.to_csv(output / f"{name}_equity.csv", index_label="Date")
     result = {
         "status": "completed",
         "source": "Tiingo adjusted daily ETF closes",
@@ -146,7 +157,8 @@ def main():
                 "No tax, FX fluctuations, borrowing, or intraday slippage model.",
             ],
         },
-        "v3_strategies": v3,\n        "v2_strategies": v2,
+        "v3_strategies": v3,
+        "v2_strategies": v2,
         "strategies": {
             "drawdown_original": simulate(common, fee_bps=args.fee_bps),
             "drawdown_risk_managed": simulate(common, managed=True, fee_bps=args.fee_bps),
