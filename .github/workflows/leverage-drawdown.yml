@@ -1,5 +1,7 @@
 name: Leverage drawdown ETF research
 on:
+  schedule:
+    - cron: '20 1 * * 1'
   workflow_dispatch:
     inputs:
       end_date:
@@ -8,7 +10,7 @@ on:
         type: string
         default: "2026-11-11"
 permissions:
-  contents: read
+  contents: write
 jobs:
   research:
     runs-on: ubuntu-latest
@@ -24,7 +26,9 @@ jobs:
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
           END_DATE: ${{ inputs.end_date }}
-        run: python leverage_drawdown.py --end "$END_DATE"
+        run: |
+          if [ -z "$END_DATE" ]; then END_DATE=$(date -u -d "yesterday" +%F); fi
+          python leverage_drawdown.py --end "$END_DATE"
       - name: Upload research outputs, including diagnostics
         if: always()
         uses: actions/upload-artifact@v4
@@ -32,3 +36,46 @@ jobs:
           name: leverage-drawdown-${{ github.run_id }}
           path: leverage_results/
           if-no-files-found: warn
+      - name: Publish latest verified research report for ChatGPT
+        if: success() && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}
+          REPO: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          import base64
+          import json
+          import os
+          import urllib.error
+          import urllib.request
+          from pathlib import Path
+          report = json.loads(Path("leverage_results/summary.json").read_text())
+          if report.get("status") != "completed" or not report.get("v3_strategies"):
+              raise SystemExit("No completed V3 report; refusing publication")
+          report["github_run_id"] = os.environ["RUN_ID"]
+          report["github_run_url"] = f"https://github.com/{os.environ['REPO']}/actions/runs/{os.environ['RUN_ID']}"
+          payload = base64.b64encode(json.dumps(report, indent=2).encode()).decode()
+          api = f"https://api.github.com/repos/{os.environ['REPO']}/contents/research_reports/latest_leverage_v3.json"
+          headers = {"Authorization": "Bearer " + os.environ["GH_TOKEN"],
+                     "Accept": "application/vnd.github+json",
+                     "Content-Type": "application/json"}
+          def call(method, body=None):
+              request = urllib.request.Request(api, data=json.dumps(body).encode() if body else None,
+                                               headers=headers, method=method)
+              with urllib.request.urlopen(request, timeout=20) as response:
+                  return json.load(response)
+          try:
+              existing = call("GET")
+              sha = existing["sha"]
+          except urllib.error.HTTPError as exc:
+              if exc.code != 404:
+                  raise
+              sha = None
+          body = {"message": "research: publish latest validated V3 backtest report",
+                  "content": payload, "branch": "main"}
+          if sha:
+              body["sha"] = sha
+          call("PUT", body)
+          print("Published research_reports/latest_leverage_v3.json")
+          PY
