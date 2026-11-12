@@ -1,0 +1,58 @@
+name: Telegram backtest result notification
+
+on:
+  workflow_run:
+    workflows: ["Tiingo research backtest"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    # Report all manually requested backtests and scheduled failures only.
+    if: ${{ github.event.workflow_run.event == 'workflow_dispatch' || (github.event.workflow_run.event == 'schedule' && github.event.workflow_run.conclusion != 'success') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Send Telegram notification
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RUN_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          RUN_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          RUN_EVENT: ${{ github.event.workflow_run.event }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.error
+          import urllib.request
+
+          token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+          chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
+          if not token or not chat_id:
+              raise SystemExit("Telegram secrets are not configured")
+          status = os.environ.get("RUN_CONCLUSION", "unknown")
+          icon = "✅" if status == "success" else "❌" if status == "failure" else "ℹ️"
+          message = (
+              f"{icon} Autotrade_new 백테스트 {status}\n"
+              f"브랜치: {os.environ.get('RUN_BRANCH', '')[:100]}\n"
+              f"실행 유형: {os.environ.get('RUN_EVENT', '')[:40]}\n"
+              f"로그 및 결과: {os.environ.get('RUN_URL', '')}"
+          )
+          request = urllib.request.Request(
+              "https://api.telegram.org/bot" + token + "/sendMessage",
+              data=json.dumps({"chat_id": chat_id, "text": message}).encode("utf-8"),
+              headers={"Content-Type": "application/json"},
+              method="POST",
+          )
+          try:
+              with urllib.request.urlopen(request, timeout=15) as response:
+                  if not json.load(response).get("ok"):
+                      raise SystemExit("Telegram did not confirm delivery")
+          except urllib.error.HTTPError as exc:
+              raise SystemExit(f"Telegram API returned HTTP {exc.code}") from None
+          print("Telegram notification delivered")
+          PY
