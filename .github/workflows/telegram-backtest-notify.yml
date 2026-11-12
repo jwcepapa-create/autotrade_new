@@ -81,22 +81,22 @@ jobs:
                       return "N/A" if value is None else f"{float(value):.2f}"
 
                   message += (
-                      f"검증 기간: {config['start']} ~ {config['end']}\\n"
-                      f"전략 수익률: {pct(swing['total_return'])}\\n"
-                      f"전략 CAGR: {pct(swing['cagr'])}\\n"
-                      f"전략 MDD: {pct(swing['mdd'])}\\n"
-                      f"전략 Sharpe: {num(swing['sharpe_ratio'])}\\n"
-                      f"전략 거래 수: {int(swing['trades'])}\\n"
-                      f"QQQ B&H 수익률: {pct(hold['total_return'])}\\n"
-                      f"QQQ B&H CAGR: {pct(hold['cagr'])}\\n"
-                      f"QQQ B&H MDD: {pct(hold['mdd'])}\\n"
-                      "주의: 수정주가 기반, 고정환율 가정, 실거래 아님\\n"
+                      f"검증 기간: {config['start']} ~ {config['end']}\n"
+                      f"전략 수익률: {pct(swing['total_return'])}\n"
+                      f"전략 CAGR: {pct(swing['cagr'])}\n"
+                      f"전략 MDD: {pct(swing['mdd'])}\n"
+                      f"전략 Sharpe: {num(swing['sharpe_ratio'])}\n"
+                      f"전략 거래 수: {int(swing['trades'])}\n"
+                      f"QQQ B&H 수익률: {pct(hold['total_return'])}\n"
+                      f"QQQ B&H CAGR: {pct(hold['cagr'])}\n"
+                      f"QQQ B&H MDD: {pct(hold['mdd'])}\n"
+                      "주의: 수정주가 기반, 고정환율 가정, 실거래 아님\n"
                   )
               except (FileNotFoundError, ValueError, KeyError, TypeError,
                       json.JSONDecodeError, OSError) as exc:
-                  message += f"성과 요약 파일 조회 실패 ({type(exc).__name__}); GitHub 결과 확인\\n"
+                  message += f"성과 요약 파일 조회 실패 ({type(exc).__name__}); GitHub 결과 확인\n"
           else:
-              message += "성과: 백테스트 미완료 — 수익률 보고 생략\\n"
+              message += "성과: 백테스트 미완료 — 수익률 보고 생략\n"
 
           message += f"로그 및 결과: {os.environ.get('RUN_URL', '')}"
           request = urllib.request.Request(
