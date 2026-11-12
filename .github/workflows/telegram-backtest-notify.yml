@@ -16,6 +16,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Download completed run artifacts
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        id: download
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+          pattern: tiingo-research-*
+          path: downloaded-results
+          merge-multiple: true
       - name: Send Telegram notification
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -26,7 +37,7 @@ jobs:
           RUN_EVENT: ${{ github.event.workflow_run.event }}
           RUN_ID: ${{ github.event.workflow_run.id }}
           GH_REPOSITORY: ${{ github.repository }}
-          GH_TOKEN: ${{ github.token }}
+          SUMMARY_FILE: downloaded-results/results/summary.json
         run: |
           python3 - <<'PY'
           import json
@@ -46,79 +57,46 @@ jobs:
               f"실행 유형: {os.environ.get('RUN_EVENT', '')[:40]}\n"
           )
 
-          # Only report metrics when a completed, validated backtest artifact exists.
-          # Never substitute synthetic figures or infer performance from CI success.
+          # Use actions/download-artifact rather than a raw archive API request.
+          # Only a completed summary.json from the exact triggering run is eligible.
           if status == "success":
-              import io
-              import zipfile
+              from pathlib import Path
 
-              def get(url):
-                  req = urllib.request.Request(
-                      url,
-                      headers={
-                          "Authorization": "Bearer " + os.environ["GH_TOKEN"],
-                          "Accept": "application/vnd.github+json",
-                          "X-GitHub-Api-Version": "2022-11-28",
-                      },
-                  )
-                  with urllib.request.urlopen(req, timeout=20) as response:
-                      return response.read()
-
+              path = Path(os.environ["SUMMARY_FILE"])
               try:
-                  api = (
-                      "https://api.github.com/repos/"
-                      + os.environ["GH_REPOSITORY"]
-                      + "/actions/runs/"
-                      + os.environ["RUN_ID"]
-                      + "/artifacts?per_page=100"
+                  if not path.is_file():
+                      raise FileNotFoundError("summary.json missing from downloaded artifact")
+                  summary = json.loads(path.read_text(encoding="utf-8"))
+                  if summary.get("status") != "completed":
+                      raise ValueError("Backtest status is not completed")
+                  metrics = summary["metrics"]
+                  swing = metrics["swing"]
+                  hold = metrics["qqq_buy_hold"]
+                  config = summary["config"]
+
+                  def pct(value):
+                      return "N/A" if value is None else f"{float(value) * 100:+.2f}%"
+
+                  def num(value):
+                      return "N/A" if value is None else f"{float(value):.2f}"
+
+                  message += (
+                      f"검증 기간: {config['start']} ~ {config['end']}\\n"
+                      f"전략 수익률: {pct(swing['total_return'])}\\n"
+                      f"전략 CAGR: {pct(swing['cagr'])}\\n"
+                      f"전략 MDD: {pct(swing['mdd'])}\\n"
+                      f"전략 Sharpe: {num(swing['sharpe_ratio'])}\\n"
+                      f"전략 거래 수: {int(swing['trades'])}\\n"
+                      f"QQQ B&H 수익률: {pct(hold['total_return'])}\\n"
+                      f"QQQ B&H CAGR: {pct(hold['cagr'])}\\n"
+                      f"QQQ B&H MDD: {pct(hold['mdd'])}\\n"
+                      "주의: 수정주가 기반, 고정환율 가정, 실거래 아님\\n"
                   )
-                  artifacts = json.loads(get(api)).get("artifacts", [])
-                  target = next(
-                      (a for a in artifacts
-                       if a.get("name", "").startswith("tiingo-research-")
-                       and not a.get("expired")),
-                      None,
-                  )
-                  if target is None:
-                      message += "성과: 결과 아티팩트 없음\n"
-                  else:
-                      data = get(target["archive_download_url"])
-                      with zipfile.ZipFile(io.BytesIO(data)) as z:
-                          names = [n for n in z.namelist()
-                                   if n == "summary.json" or n.endswith("/summary.json")]
-                          if len(names) != 1:
-                              raise ValueError("summary.json not uniquely present")
-                          summary = json.loads(z.read(names[0]))
-                      if summary.get("status") != "completed":
-                          raise ValueError("Backtest status is not completed")
-                      metrics = summary["metrics"]
-                      swing = metrics["swing"]
-                      hold = metrics["qqq_buy_hold"]
-                      config = summary["config"]
-
-                      def pct(value):
-                          return "N/A" if value is None else f"{float(value) * 100:+.2f}%"
-
-                      def num(value):
-                          return "N/A" if value is None else f"{float(value):.2f}"
-
-                      message += (
-                          f"검증 기간: {config['start']} ~ {config['end']}\n"
-                          f"전략 수익률: {pct(swing['total_return'])}\n"
-                          f"전략 CAGR: {pct(swing['cagr'])}\n"
-                          f"전략 MDD: {pct(swing['mdd'])}\n"
-                          f"전략 Sharpe: {num(swing['sharpe_ratio'])}\n"
-                          f"전략 거래 수: {int(swing['trades'])}\n"
-                          f"QQQ B&H 수익률: {pct(hold['total_return'])}\n"
-                          f"QQQ B&H CAGR: {pct(hold['cagr'])}\n"
-                          f"QQQ B&H MDD: {pct(hold['mdd'])}\n"
-                          "주의: 수정주가 기반, 고정환율 가정, 실거래 아님\n"
-                      )
-              except (urllib.error.URLError, ValueError, KeyError, TypeError,
-                      json.JSONDecodeError, zipfile.BadZipFile, OSError) as exc:
-                  message += f"성과 요약 조회 실패 ({type(exc).__name__}); GitHub 결과 확인\n"
+              except (FileNotFoundError, ValueError, KeyError, TypeError,
+                      json.JSONDecodeError, OSError) as exc:
+                  message += f"성과 요약 파일 조회 실패 ({type(exc).__name__}); GitHub 결과 확인\\n"
           else:
-              message += "성과: 백테스트 미완료 — 수익률 보고 생략\n"
+              message += "성과: 백테스트 미완료 — 수익률 보고 생략\\n"
 
           message += f"로그 및 결과: {os.environ.get('RUN_URL', '')}"
           request = urllib.request.Request(
