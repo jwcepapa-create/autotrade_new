@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r requirements.txt pytest
-      - run: python -m pytest -q tests/test_leverage_drawdown.py tests/test_leverage_v2.py tests/test_leverage_v3.py
+      - run: python -m pytest -q tests/test_leverage_drawdown.py tests/test_leverage_v2.py tests/test_leverage_v3.py tests/test_leverage_v4.py
       - name: Run real-data leverage research
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
@@ -51,12 +51,12 @@ jobs:
           import urllib.request
           from pathlib import Path
           report = json.loads(Path("leverage_results/summary.json").read_text())
-          if report.get("status") != "completed" or not report.get("v3_strategies"):
-              raise SystemExit("No completed V3 report; refusing publication")
+          if report.get("status") != "completed" or not report.get("v4_strategies"):
+              raise SystemExit("No completed V4 report; refusing publication")
           report["github_run_id"] = os.environ["RUN_ID"]
           report["github_run_url"] = f"https://github.com/{os.environ['REPO']}/actions/runs/{os.environ['RUN_ID']}"
           payload = base64.b64encode(json.dumps(report, indent=2).encode()).decode()
-          api = f"https://api.github.com/repos/{os.environ['REPO']}/contents/research_reports/latest_leverage_v3.json"
+          api = f"https://api.github.com/repos/{os.environ['REPO']}/contents/research_reports/latest_leverage_v4.json"
           headers = {"Authorization": "Bearer " + os.environ["GH_TOKEN"],
                      "Accept": "application/vnd.github+json",
                      "Content-Type": "application/json"}
@@ -72,7 +72,7 @@ jobs:
               if exc.code != 404:
                   raise
               sha = None
-          body = {"message": "research: publish latest validated V3 backtest report",
+          body = {"message": "research: publish latest validated V4 backtest report",
                   "content": payload, "branch": "main"}
           if sha:
               body["sha"] = sha
