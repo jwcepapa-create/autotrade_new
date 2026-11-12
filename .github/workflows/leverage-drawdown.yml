@@ -24,7 +24,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r requirements.txt pytest
-      - run: python -m pytest -q tests/test_leverage_drawdown.py tests/test_leverage_v2.py tests/test_leverage_v3.py tests/test_leverage_v4.py
+      - run: python -m pytest -q tests/test_leverage_drawdown.py tests/test_leverage_v2.py tests/test_leverage_v3.py tests/test_leverage_v4.py tests/test_leverage_v5.py
       - name: Run real-data leverage research
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
@@ -54,12 +54,12 @@ jobs:
           import urllib.request
           from pathlib import Path
           report = json.loads(Path("leverage_results/summary.json").read_text())
-          if report.get("status") != "completed" or not report.get("v4_strategies"):
+          if report.get("status") != "completed" or not report.get("v5_strategies"):
               raise SystemExit("No completed V4 report; refusing publication")
           report["github_run_id"] = os.environ["RUN_ID"]
           report["github_run_url"] = f"https://github.com/{os.environ['REPO']}/actions/runs/{os.environ['RUN_ID']}"
           payload = base64.b64encode(json.dumps(report, indent=2).encode()).decode()
-          api = f"https://api.github.com/repos/{os.environ['REPO']}/contents/research_reports/latest_leverage_v4.json"
+          api = f"https://api.github.com/repos/{os.environ['REPO']}/contents/research_reports/latest_leverage_v5.json"
           headers = {"Authorization": "Bearer " + os.environ["GH_TOKEN"],
                      "Accept": "application/vnd.github+json",
                      "Content-Type": "application/json"}
@@ -80,7 +80,7 @@ jobs:
           if sha:
               body["sha"] = sha
           call("PUT", body)
-          print("Published research_reports/latest_leverage_v4.json")
+          print("Published research_reports/latest_leverage_v5.json")
           PY
       - name: Telegram V4 result notification
         if: always()
@@ -106,14 +106,14 @@ jobs:
                   report = json.loads(path.read_text())
               except (ValueError, OSError):
                   pass
-          success = os.getenv("JOB_STATUS") == "success" and report and report.get("status") == "completed" and report.get("v4_strategies")
+          success = os.getenv("JOB_STATUS") == "success" and report and report.get("status") == "completed" and report.get("v5_strategies")
           if success:
-              lines = ["✅ V4 ETF 백테스트 완료", f"종료일: {report.get('end_requested', '?')}"]
-              for name, v in report["v4_strategies"].items():
+              lines = ["✅ V5 ETF 백테스트 완료", f"종료일: {report.get('end_requested', '?')}"]
+              for name, v in report["v5_strategies"].items():
                   lines.append(f"{name}: CAGR {v['cagr']:.2%} / MDD {v['mdd']:.2%}")
-              lines.append("ChatGPT에서 'V4 결과 분석해줘'라고 요청하세요.")
+              lines.append("ChatGPT에서 'V5 결과 분석해줘'라고 요청하세요.")
           else:
-              lines = ["⚠️ V4 ETF 백테스트 실패 또는 결과 저장 오류", "GitHub Actions 실행 기록을 확인하세요."]
+              lines = ["⚠️ V5 ETF 백테스트 실패 또는 결과 저장 오류", "GitHub Actions 실행 기록을 확인하세요."]
           lines.append(os.environ["RUN_URL"])
           data = urllib.parse.urlencode({"chat_id": chat_id, "text": "\n".join(lines)}).encode()
           url = "https://api.telegram.org/bot" + token + "/sendMessage"
