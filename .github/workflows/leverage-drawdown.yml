@@ -80,5 +80,47 @@ jobs:
           if sha:
               body["sha"] = sha
           call("PUT", body)
-          print("Published research_reports/latest_leverage_v3.json")
+          print("Published research_reports/latest_leverage_v4.json")
+          PY
+      - name: Telegram V4 result notification
+        if: always()
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          JOB_STATUS: ${{ job.status }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.parse, urllib.request
+          from pathlib import Path
+          token = os.getenv("TELEGRAM_BOT_TOKEN", "")
+          chat_id = os.getenv("TELEGRAM_CHAT_ID", "")
+          if not token or not chat_id:
+              print("Telegram secrets missing; notification skipped")
+              raise SystemExit(0)
+          path = Path("leverage_results/summary.json")
+          report = None
+          if path.exists():
+              try:
+                  report = json.loads(path.read_text())
+              except (ValueError, OSError):
+                  pass
+          success = os.getenv("JOB_STATUS") == "success" and report and report.get("status") == "completed" and report.get("v4_strategies")
+          if success:
+              lines = ["✅ V4 ETF 백테스트 완료", f"종료일: {report.get('end_requested', '?')}"]
+              for name, v in report["v4_strategies"].items():
+                  lines.append(f"{name}: CAGR {v['cagr']:.2%} / MDD {v['mdd']:.2%}")
+              lines.append("ChatGPT에서 'V4 결과 분석해줘'라고 요청하세요.")
+          else:
+              lines = ["⚠️ V4 ETF 백테스트 실패 또는 결과 저장 오류", "GitHub Actions 실행 기록을 확인하세요."]
+          lines.append(os.environ["RUN_URL"])
+          data = urllib.parse.urlencode({"chat_id": chat_id, "text": "\n".join(lines)}).encode()
+          url = "https://api.telegram.org/bot" + token + "/sendMessage"
+          request = urllib.request.Request(url, data=data, method="POST")
+          with urllib.request.urlopen(request, timeout=20) as response:
+              result = json.load(response)
+          if not result.get("ok"):
+              raise RuntimeError("Telegram rejected notification")
+          print("Telegram notification sent")
           PY
