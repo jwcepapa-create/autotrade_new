@@ -1,0 +1,2778 @@
+{
+  "status": "completed",
+  "source": "Tiingo original adjusted Open and Close, no synthetic leveraged bars",
+  "universe": [
+    "QQQ",
+    "VOO",
+    "MGK",
+    "SOXX",
+    "SMH",
+    "QLD",
+    "USD",
+    "TQQQ",
+    "SOXL"
+  ],
+  "price_start": "2016-01-04",
+  "evaluation_start": "2017-01-03",
+  "evaluation_end": "2026-11-23",
+  "sessions": 2487,
+  "methods": {
+    "signals": "Closing signals from t-1 or earlier",
+    "execution": "At adjusted Open(t), earn overnight gap on existing holdings, then Open-to-Close return after rebalance",
+    "positions": "Holdings drift naturally; cash is unallocated part; no margin/shorting",
+    "warmup": "All start with cash and first trade after 252 common trading sessions",
+    "fee": "All-in round-trip modeled as per-direction 15/30/60 bps of traded notional; no separate market impact",
+    "cash_rates": "0% and 3% annualized fixed assumptions, not observed historical risk-free rates",
+    "benchmarks": "QQQ buy-hold, 4x 1x ETF buy-hold, monthly rebalanced 1x ETF basket",
+    "rsi_macd_ablation": "V5 volatility controls intact, only oscillator-confirmed recovery condition removed",
+    "no_lookahead": "Signals use only closes to t-1; no intraday signal use"
+  },
+  "limitations": [
+    "Not true out of sample: rule selection made using historical performance",
+    "Adjusted Open/Close is dividend reinvestment proxy, not exact cash-flow execution",
+    "No per-ticker bid/ask spread, liquidity, market-impact, fill probability or taxes",
+    "Cash yield assumed flat, not contemporaneous money market actuals",
+    "ETF survivorship/selection and provider historical data revisions possible",
+    "V5 family includes no volume signal",
+    "Historical subperiods are descriptive, not independent walk-forward tests"
+  ],
+  "scenarios": {
+    "cost15bps_cash0pct": {
+      "v2_threshold": {
+        "cagr": 0.26590603253146106,
+        "total_return": 9.28915611787983,
+        "mdd": -0.46323450733617744,
+        "sharpe_zero_rf": 0.8875432406416066,
+        "volatility": 0.32608748270901805,
+        "ending_krw": 102891561.1787983,
+        "fee_paid_krw": 2752214.460851269,
+        "turnover": 54.492341854455645,
+        "rebalances": 138,
+        "average_exposure": 0.9999999999999997,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 5367654.926638226,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": 0.04509421566375971,
+            "mdd": -0.3713592992216337
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.36726455105106703,
+            "mdd": -0.4619091966755039
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 3.192001021828653,
+            "mdd": -0.3116939224403803
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v2_daily": {
+        "cagr": 0.26246805717772603,
+        "total_return": 9.016205843855904,
+        "mdd": -0.469937295652472,
+        "sharpe_zero_rf": 0.8841098110978302,
+        "volatility": 0.323251196077926,
+        "ending_krw": 100162058.43855904,
+        "fee_paid_krw": 3603434.9123869585,
+        "turnover": 67.63868608128433,
+        "rebalances": 2486,
+        "average_exposure": 1.0,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 5300627.04347528,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": 0.045034584844721115,
+            "mdd": -0.36962780371531734
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.3713777433443929,
+            "mdd": -0.46867595132648443
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 3.1157244971347495,
+            "mdd": -0.2979261682991169
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2017-01-05",
+          "2017-01-06",
+          "2017-01-09",
+          "2017-01-10"
+        ]
+      },
+      "v4_recovery_no3x": {
+        "cagr": 0.23535660754264853,
+        "total_return": 7.0815358666347095,
+        "mdd": -0.2909107166392928,
+        "sharpe_zero_rf": 1.0342661393595343,
+        "volatility": 0.2307225735558215,
+        "ending_krw": 80815358.66634709,
+        "fee_paid_krw": 1665628.4064853797,
+        "turnover": 38.27188461130502,
+        "rebalances": 99,
+        "average_exposure": 0.9220367809629906,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7090892.833607072,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.05174944604953924,
+            "mdd": -0.2909107166392928
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.2484792888181787,
+            "mdd": -0.2805502704931827
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.1740912363717357,
+            "mdd": -0.23981394034262515
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v4_strict_no3x": {
+        "cagr": 0.2292750443196665,
+        "total_return": 6.6967016330836175,
+        "mdd": -0.29091071663929313,
+        "sharpe_zero_rf": 1.0270457252640615,
+        "volatility": 0.22661063163868753,
+        "ending_krw": 76967016.33083618,
+        "fee_paid_krw": 1485653.094532598,
+        "turnover": 35.2778778704235,
+        "rebalances": 84,
+        "average_exposure": 0.9039279821449987,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7090892.833607068,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.05174944604953957,
+            "mdd": -0.29091071663929313
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.2134376045247076,
+            "mdd": -0.2459169632378081
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.0140332907508385,
+            "mdd": -0.23981394034262526
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_confirmed": {
+        "cagr": 0.226561609013205,
+        "total_return": 6.530376932292325,
+        "mdd": -0.29091071663929313,
+        "sharpe_zero_rf": 1.014060485635907,
+        "volatility": 0.22753267612015732,
+        "ending_krw": 75303769.32292324,
+        "fee_paid_krw": 1892939.4381187456,
+        "turnover": 46.359619470554875,
+        "rebalances": 122,
+        "average_exposure": 0.9092743327225876,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7090892.833607068,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.05174944604953968,
+            "mdd": -0.29091071663929313
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.23395634860135373,
+            "mdd": -0.25956387005783665
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.038325946247481,
+            "mdd": -0.23981394034262526
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_volatility": {
+        "cagr": 0.21856393194596002,
+        "total_return": 6.058770115485659,
+        "mdd": -0.2854802640676324,
+        "sharpe_zero_rf": 0.9973784148695988,
+        "volatility": 0.22393211703084864,
+        "ending_krw": 70587701.15485659,
+        "fee_paid_krw": 1728566.540063372,
+        "turnover": 42.95551895757828,
+        "rebalances": 124,
+        "average_exposure": 0.9068521648466761,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7145197.359323676,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.06601192636589237,
+            "mdd": -0.2854802640676324
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.23395634860135395,
+            "mdd": -0.2595638700578369
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.9840957319266073,
+            "mdd": -0.23981394034262493
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_fast": {
+        "cagr": 0.22489464048883678,
+        "total_return": 6.429806352166472,
+        "mdd": -0.29091071663929335,
+        "sharpe_zero_rf": 0.9959072869012625,
+        "volatility": 0.23113718811188222,
+        "ending_krw": 74298063.52166472,
+        "fee_paid_krw": 2344995.873145268,
+        "turnover": 62.24383499500016,
+        "rebalances": 179,
+        "average_exposure": 0.9224536801023875,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7090892.833607066,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.06299168684676304,
+            "mdd": -0.29091071663929335
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.26283779160804854,
+            "mdd": -0.2790343264985692
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.218552323526763,
+            "mdd": -0.2398139403426256
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_no_rsi_macd": {
+        "cagr": 0.22781929159349157,
+        "total_return": 6.607062757508593,
+        "mdd": -0.2854802640676325,
+        "sharpe_zero_rf": 1.0224596862724056,
+        "volatility": 0.2264016806508912,
+        "ending_krw": 76070627.57508592,
+        "fee_paid_krw": 1520606.312942817,
+        "turnover": 35.48442360975929,
+        "rebalances": 102,
+        "average_exposure": 0.9173268035797792,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7145197.359323675,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.06601192636589293,
+            "mdd": -0.2854802640676325
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.23813004005356708,
+            "mdd": -0.25868503539413434
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.1216987755017187,
+            "mdd": -0.2398139403426246
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "basket_1x_buyhold": {
+        "cagr": 0.2410176161814661,
+        "total_return": 7.455208807850141,
+        "mdd": -0.4006468047593694,
+        "sharpe_zero_rf": 0.8896987278500939,
+        "volatility": 0.2909763563223458,
+        "ending_krw": 84552088.07850142,
+        "fee_paid_krw": 15000.0,
+        "turnover": 1.0,
+        "rebalances": 1,
+        "average_exposure": 1.0000000000000016,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 5993531.952406306,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.007898000299079166,
+            "mdd": -0.32659328691254896
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.3271592955870464,
+            "mdd": -0.3989354472824165
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.4155173695945162,
+            "mdd": -0.3545684633887204
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04"
+        ]
+      },
+      "basket_1x_monthly": {
+        "cagr": 0.22932655223501874,
+        "total_return": 6.699890582857676,
+        "mdd": -0.3797228770365231,
+        "sharpe_zero_rf": 0.9110711465968193,
+        "volatility": 0.26611898169401876,
+        "ending_krw": 76998905.82857676,
+        "fee_paid_krw": 169000.588986482,
+        "turnover": 3.5955395432341204,
+        "rebalances": 119,
+        "average_exposure": 1.0,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 6202771.229634769,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.012807160369140536,
+            "mdd": -0.32521546612783814
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.3098205402343225,
+            "mdd": -0.3782529508597835
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.1239891225092453,
+            "mdd": -0.2723779457659502
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2017-02-01",
+          "2017-03-01",
+          "2017-04-03",
+          "2017-05-01"
+        ]
+      },
+      "qqq_buyhold": {
+        "cagr": 0.1946692986755476,
+        "total_return": 4.803634909406,
+        "mdd": -0.3512252567481847,
+        "sharpe_zero_rf": 0.8889819025007195,
+        "volatility": 0.23052188824622394,
+        "ending_krw": 58036349.094060004,
+        "fee_paid_krw": 15000.0,
+        "turnover": 1.0,
+        "rebalances": 1,
+        "average_exposure": 1.0,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 6487747.4325181525,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": 0.04883731279811521,
+            "mdd": -0.28559372098910907
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.33221424014260714,
+            "mdd": -0.3483179809618271
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.5141368597519955,
+            "mdd": -0.22770816026566454
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04"
+        ]
+      }
+    },
+    "cost15bps_cash3pct": {
+      "v2_threshold": {
+        "cagr": 0.26591639498486375,
+        "total_return": 9.289988828181897,
+        "mdd": -0.4632345073361782,
+        "sharpe_zero_rf": 0.8875684781914881,
+        "volatility": 0.32608745281731516,
+        "ending_krw": 102899888.28181897,
+        "fee_paid_krw": 2752437.1999475094,
+        "turnover": 54.492341854455624,
+        "rebalances": 138,
+        "average_exposure": 0.9999999999999989,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 5367654.926638218,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": 0.04509421566376148,
+            "mdd": -0.371359299221633
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.36726455105106814,
+            "mdd": -0.461909196675505
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 3.1920010218287,
+            "mdd": -0.31169392244037986
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v2_daily": {
+        "cagr": 0.2624783914885498,
+        "total_return": 9.017016464056196,
+        "mdd": -0.46993729565247155,
+        "sharpe_zero_rf": 0.8841352694887029,
+        "volatility": 0.32325116628935835,
+        "ending_krw": 100170164.64056197,
+        "fee_paid_krw": 3603726.541490408,
+        "turnover": 67.63868608128433,
+        "rebalances": 2486,
+        "average_exposure": 1.0,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 5300627.043475284,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": 0.04503458484472067,
+            "mdd": -0.3696278037153178
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.3713777433443922,
+            "mdd": -0.468675951326484
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 3.1157244971348046,
+            "mdd": -0.297926168299116
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2017-01-05",
+          "2017-01-06",
+          "2017-01-09",
+          "2017-01-10"
+        ]
+      },
+      "v4_recovery_no3x": {
+        "cagr": 0.2382326044697738,
+        "total_return": 7.269477871556591,
+        "mdd": -0.29064031211512065,
+        "sharpe_zero_rf": 1.044501641390968,
+        "volatility": 0.2306864620350376,
+        "ending_krw": 82694778.7155659,
+        "fee_paid_krw": 1691448.82322092,
+        "turnover": 38.280177345172184,
+        "rebalances": 99,
+        "average_exposure": 0.9219460572416874,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7093596.878848794,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.05052028427222499,
+            "mdd": -0.29064031211512065
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.23957954665820258,
+            "mdd": -0.27362183160802545
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.191571757550627,
+            "mdd": -0.23935953061757975
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v4_strict_no3x": {
+        "cagr": 0.23278288213955523,
+        "total_return": 6.9166117209427584,
+        "mdd": -0.2906403121151211,
+        "sharpe_zero_rf": 1.040035791694019,
+        "volatility": 0.22650521552187558,
+        "ending_krw": 79166117.20942758,
+        "fee_paid_krw": 1514309.6980024306,
+        "turnover": 35.290616024511934,
+        "rebalances": 84,
+        "average_exposure": 0.9034895928439107,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7093596.878848789,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.050520284272227656,
+            "mdd": -0.2906403121151211
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.20096046322925643,
+            "mdd": -0.23627103746098888
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.031427694408617,
+            "mdd": -0.23935953061757975
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_confirmed": {
+        "cagr": 0.22986569246755817,
+        "total_return": 6.733341091608143,
+        "mdd": -0.290640312115121,
+        "sharpe_zero_rf": 1.0260617732498258,
+        "volatility": 0.22749177367827814,
+        "ending_krw": 77333410.91608143,
+        "fee_paid_krw": 1926682.4792010775,
+        "turnover": 46.37083295333396,
+        "rebalances": 122,
+        "average_exposure": 0.9091689275907373,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7093596.87884879,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.050520284272226657,
+            "mdd": -0.290640312115121
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.22316168292428196,
+            "mdd": -0.2512665423986692
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.056616488062278,
+            "mdd": -0.23935953061757864
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_volatility": {
+        "cagr": 0.22193117701613407,
+        "total_return": 6.253993066955824,
+        "mdd": -0.28515058104828195,
+        "sharpe_zero_rf": 1.0098795934046811,
+        "volatility": 0.22389143186670535,
+        "ending_krw": 72539930.66955824,
+        "fee_paid_krw": 1761015.1832718863,
+        "turnover": 42.967519025491974,
+        "rebalances": 124,
+        "average_exposure": 0.9067469249833219,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7148494.18951718,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.06464592105640565,
+            "mdd": -0.28515058104828195
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.22316168292428173,
+            "mdd": -0.25126654239866886
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.0030715526814014,
+            "mdd": -0.23935953061757942
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_fast": {
+        "cagr": 0.22771031686205356,
+        "total_return": 6.600390476048826,
+        "mdd": -0.290640312115121,
+        "sharpe_zero_rf": 1.005930921704123,
+        "volatility": 0.231118923646676,
+        "ending_krw": 76003904.76048826,
+        "fee_paid_krw": 2377063.427058086,
+        "turnover": 62.25059725451213,
+        "rebalances": 179,
+        "average_exposure": 0.9224200265046377,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7093596.87884879,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.0620530150255475,
+            "mdd": -0.290640312115121
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.25382913890876746,
+            "mdd": -0.2720582728041504
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.235929211684371,
+            "mdd": -0.23935953061757897
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_no_rsi_macd": {
+        "cagr": 0.23084134152108704,
+        "total_return": 6.7942066558613075,
+        "mdd": -0.28515058104828195,
+        "sharpe_zero_rf": 1.0334844676339572,
+        "volatility": 0.22636374538240617,
+        "ending_krw": 77942066.55861308,
+        "fee_paid_krw": 1546444.4841949418,
+        "turnover": 35.49414350296592,
+        "rebalances": 102,
+        "average_exposure": 0.9172300652182367,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7148494.18951718,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.06464592105640654,
+            "mdd": -0.28515058104828195
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.22871817493690338,
+            "mdd": -0.2512709960452447
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.140023744587013,
+            "mdd": -0.23935953061757897
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "basket_1x_buyhold": {
+        "cagr": 0.24102777490327276,
+        "total_return": 7.455893095210433,
+        "mdd": -0.4006468047593683,
+        "sharpe_zero_rf": 0.8897270115303885,
+        "volatility": 0.2909763262411407,
+        "ending_krw": 84558930.95210433,
+        "fee_paid_krw": 15001.213962970642,
+        "turnover": 1.0,
+        "rebalances": 1,
+        "average_exposure": 0.9999999999999915,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 5993531.952406317,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.007898000299081276,
+            "mdd": -0.3265932869125472
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.32715929558704426,
+            "mdd": -0.39893544728241526
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.4155173695945575,
+            "mdd": -0.3545684633887125
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04"
+        ]
+      },
+      "basket_1x_monthly": {
+        "cagr": 0.22933661525611582,
+        "total_return": 6.700513741660868,
+        "mdd": -0.3797228770365241,
+        "sharpe_zero_rf": 0.9111020773240794,
+        "volatility": 0.2661189508133234,
+        "ending_krw": 77005137.41660868,
+        "fee_paid_krw": 169014.26635028733,
+        "turnover": 3.5955395432341195,
+        "rebalances": 119,
+        "average_exposure": 1.0,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 6202771.229634759,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.01280716036913887,
+            "mdd": -0.325215466127838
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.3098205402343235,
+            "mdd": -0.3782529508597845
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.123989122509274,
+            "mdd": -0.2723779457659511
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2017-02-01",
+          "2017-03-01",
+          "2017-04-03",
+          "2017-05-01"
+        ]
+      },
+      "qqq_buyhold": {
+        "cagr": 0.19467907799930217,
+        "total_return": 4.804104602597706,
+        "mdd": -0.35122525674818417,
+        "sharpe_zero_rf": 0.8890173068644478,
+        "volatility": 0.23052196201316844,
+        "ending_krw": 58041046.02597706,
+        "fee_paid_krw": 15001.213962970642,
+        "turnover": 1.0,
+        "rebalances": 1,
+        "average_exposure": 1.0,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 6487747.432518158,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": 0.04883731279811743,
+            "mdd": -0.28559372098910885
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.3322142401426069,
+            "mdd": -0.3483179809618264
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.5141368597519973,
+            "mdd": -0.2277081602656642
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04"
+        ]
+      }
+    },
+    "cost30bps_cash0pct": {
+      "v2_threshold": {
+        "cagr": 0.2554734606175275,
+        "total_return": 8.480882714799485,
+        "mdd": -0.47204752446543485,
+        "sharpe_zero_rf": 0.8621023085666207,
+        "volatility": 0.32609217989406053,
+        "ending_krw": 94808827.14799485,
+        "fee_paid_krw": 5219448.396208025,
+        "turnover": 54.492341854455645,
+        "rebalances": 138,
+        "average_exposure": 0.9999999999999997,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 5279524.755345652,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": 0.03350324684753647,
+            "mdd": -0.37410927825127716
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.3814561866357188,
+            "mdd": -0.4707439737459532
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 3.078865184006811,
+            "mdd": -0.31457945600498705
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v2_daily": {
+        "cagr": 0.24956914879896086,
+        "total_return": 8.04917441353404,
+        "mdd": -0.4798312447177311,
+        "sharpe_zero_rf": 0.8522757455470981,
+        "volatility": 0.32324665653939527,
+        "ending_krw": 90491744.1353404,
+        "fee_paid_krw": 6739755.103852235,
+        "turnover": 67.63868608128433,
+        "rebalances": 2486,
+        "average_exposure": 1.0,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 5201687.5528226895,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": 0.03276501930335485,
+            "mdd": -0.372509520671256
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.3874601452107015,
+            "mdd": -0.47857968640543325
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.969014407905273,
+            "mdd": -0.3003448837108377
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2017-01-05",
+          "2017-01-06",
+          "2017-01-09",
+          "2017-01-10"
+        ]
+      },
+      "v4_recovery_no3x": {
+        "cagr": 0.2281973274630813,
+        "total_return": 6.630249888684048,
+        "mdd": -0.2946645732319211,
+        "sharpe_zero_rf": 1.0092912971982908,
+        "volatility": 0.23063949022623376,
+        "ending_krw": 76302498.88684048,
+        "fee_paid_krw": 3209951.7594381203,
+        "turnover": 38.27188461130502,
+        "rebalances": 99,
+        "average_exposure": 0.9220367809629906,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7053354.267680789,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.06144721916390261,
+            "mdd": -0.2946645732319211
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.25175115440178186,
+            "mdd": -0.2830418463388399
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.0946446162937127,
+            "mdd": -0.24221773515495237
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v4_strict_no3x": {
+        "cagr": 0.22270644911704296,
+        "total_return": 6.299622641803075,
+        "mdd": -0.29466457323192063,
+        "sharpe_zero_rf": 1.0035900071808668,
+        "volatility": 0.2265387743607695,
+        "ending_krw": 72996226.41803075,
+        "fee_paid_krw": 2870321.850463364,
+        "turnover": 35.2778778704235,
+        "rebalances": 84,
+        "average_exposure": 0.9039279821449987,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7053354.267680794,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.06144721916390217,
+            "mdd": -0.29466457323192063
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.2140279690947423,
+            "mdd": -0.24648295000545595
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.9437722082280287,
+            "mdd": -0.24221773515495226
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_confirmed": {
+        "cagr": 0.21795661745433215,
+        "total_return": 6.024066868461279,
+        "mdd": -0.2946645732319211,
+        "sharpe_zero_rf": 0.9832105983001472,
+        "volatility": 0.22748085840356086,
+        "ending_krw": 70240668.6846128,
+        "fee_paid_krw": 3621304.5570468092,
+        "turnover": 46.359619470554875,
+        "rebalances": 122,
+        "average_exposure": 0.9092743327225876,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7053354.267680789,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.061447219163901834,
+            "mdd": -0.2946645732319211
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.24142788846532492,
+            "mdd": -0.2641207318994011
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.9557230992446968,
+            "mdd": -0.24221773515495337
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_volatility": {
+        "cagr": 0.21064126661991622,
+        "total_return": 5.617934268375705,
+        "mdd": -0.2883719775235162,
+        "sharpe_zero_rf": 0.9683085789315186,
+        "volatility": 0.2238910581664166,
+        "ending_krw": 66179342.683757044,
+        "fee_paid_krw": 3318875.616342467,
+        "turnover": 42.95551895757828,
+        "rebalances": 124,
+        "average_exposure": 0.9068521648466761,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7116280.224764838,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.07325422459894437,
+            "mdd": -0.2883719775235162
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.24142788846532515,
+            "mdd": -0.264120731899401
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.9025502168149262,
+            "mdd": -0.24221773515495149
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_fast": {
+        "cagr": 0.21337178772522147,
+        "total_return": 5.766989068169326,
+        "mdd": -0.2946645732319211,
+        "sharpe_zero_rf": 0.9550436738330231,
+        "volatility": 0.23109348012063366,
+        "ending_krw": 67669890.68169326,
+        "fee_paid_krw": 4423786.293031815,
+        "turnover": 62.24383499500016,
+        "rebalances": 179,
+        "average_exposure": 0.9224536801023875,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7053354.267680789,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.07506340302295689,
+            "mdd": -0.2946645732319211
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.28043548174341737,
+            "mdd": -0.2918011637136456
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.1265588858590756,
+            "mdd": -0.2422177351549536
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_no_rsi_macd": {
+        "cagr": 0.22122105183620322,
+        "total_return": 6.212422933893396,
+        "mdd": -0.2883719775235162,
+        "sharpe_zero_rf": 0.9988151946760382,
+        "volatility": 0.2263376124553491,
+        "ending_krw": 72124229.33893396,
+        "fee_paid_krw": 2938932.2994297897,
+        "turnover": 35.48442360975929,
+        "rebalances": 102,
+        "average_exposure": 0.9173268035797792,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7116280.224764838,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.07325422459894437,
+            "mdd": -0.2883719775235162
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.24146726196945933,
+            "mdd": -0.2606052700932696
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.0431176490522045,
+            "mdd": -0.24221773515495337
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "basket_1x_buyhold": {
+        "cagr": 0.24082891384974925,
+        "total_return": 7.442506941839373,
+        "mdd": -0.4006468047593694,
+        "sharpe_zero_rf": 0.8891724563766602,
+        "volatility": 0.29097732890010486,
+        "ending_krw": 84425069.41839373,
+        "fee_paid_krw": 30000.0,
+        "turnover": 1.0,
+        "rebalances": 1,
+        "average_exposure": 1.0000000000000016,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 5993531.952406306,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.00789800029907839,
+            "mdd": -0.32659328691254874
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.3271592955870466,
+            "mdd": -0.3989354472824165
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.4155173695945273,
+            "mdd": -0.35456846338871917
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04"
+        ]
+      },
+      "basket_1x_monthly": {
+        "cagr": 0.22865564189725918,
+        "total_return": 6.6584461541800275,
+        "mdd": -0.37995368139065067,
+        "sharpe_zero_rf": 0.9090179079197652,
+        "volatility": 0.26611725747761944,
+        "ending_krw": 76584461.54180028,
+        "fee_paid_krw": 336746.1607302802,
+        "turnover": 3.5955395432341204,
+        "rebalances": 119,
+        "average_exposure": 1.0,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 6200463.186093493,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.012867406420150274,
+            "mdd": -0.32523387809654414
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.31014883556078676,
+            "mdd": -0.3784760870463213
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.11814001357206,
+            "mdd": -0.27241583717081175
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2017-02-01",
+          "2017-03-01",
+          "2017-04-03",
+          "2017-05-01"
+        ]
+      },
+      "qqq_buyhold": {
+        "cagr": 0.1944876438147698,
+        "total_return": 4.794916379246686,
+        "mdd": -0.3512252567481845,
+        "sharpe_zero_rf": 0.8883226896362711,
+        "volatility": 0.23052104485811706,
+        "ending_krw": 57949163.792466864,
+        "fee_paid_krw": 30000.0,
+        "turnover": 1.0,
+        "rebalances": 1,
+        "average_exposure": 1.0,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 6487747.432518155,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": 0.04883731279811743,
+            "mdd": -0.2855937209891092
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.33221424014260725,
+            "mdd": -0.34831798096182665
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.5141368597519924,
+            "mdd": -0.22770816026566398
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04"
+        ]
+      }
+    },
+    "cost30bps_cash3pct": {
+      "v2_threshold": {
+        "cagr": 0.25548373767198407,
+        "total_return": 8.481650010836054,
+        "mdd": -0.47204752446543363,
+        "sharpe_zero_rf": 0.8621276031216953,
+        "volatility": 0.3260921131271592,
+        "ending_krw": 94816500.10836054,
+        "fee_paid_krw": 5219870.810680139,
+        "turnover": 54.492341854455624,
+        "rebalances": 138,
+        "average_exposure": 0.9999999999999989,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 5279524.755345664,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": 0.03350324684753714,
+            "mdd": -0.3741092782512774
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.38145618663571745,
+            "mdd": -0.4707439737459522
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 3.0788651840068413,
+            "mdd": -0.31457945600498727
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v2_daily": {
+        "cagr": 0.24957937752190174,
+        "total_return": 8.049906771044403,
+        "mdd": -0.4798312447177294,
+        "sharpe_zero_rf": 0.8523012607957418,
+        "volatility": 0.32324658975103837,
+        "ending_krw": 90499067.71044403,
+        "fee_paid_krw": 6740300.55806081,
+        "turnover": 67.63868608128433,
+        "rebalances": 2486,
+        "average_exposure": 1.0,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 5201687.552822705,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": 0.03276501930335485,
+            "mdd": -0.3725095206712561
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.3874601452106985,
+            "mdd": -0.47857968640543147
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.9690144079052967,
+            "mdd": -0.30034488371083656
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2017-01-05",
+          "2017-01-06",
+          "2017-01-09",
+          "2017-01-10"
+        ]
+      },
+      "v4_recovery_no3x": {
+        "cagr": 0.23105510603193147,
+        "total_return": 6.80759965571155,
+        "mdd": -0.2943956216670285,
+        "sharpe_zero_rf": 1.0195214079168986,
+        "volatility": 0.23060322323914256,
+        "ending_krw": 78075996.5571155,
+        "fee_paid_krw": 3259322.3622789243,
+        "turnover": 38.280177345172184,
+        "rebalances": 99,
+        "average_exposure": 0.9219460572416874,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7056043.783329715,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.06023159643088938,
+            "mdd": -0.2943956216670285
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.24289400625312896,
+            "mdd": -0.2761403023068819
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.1116786252539765,
+            "mdd": -0.24176476232515898
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v4_strict_no3x": {
+        "cagr": 0.2261931682080589,
+        "total_return": 6.508043639142024,
+        "mdd": -0.29439562166702793,
+        "sharpe_zero_rf": 1.0165648647321714,
+        "volatility": 0.22643324347395657,
+        "ending_krw": 75080436.39142025,
+        "fee_paid_krw": 2925267.93916216,
+        "turnover": 35.290616024511934,
+        "rebalances": 84,
+        "average_exposure": 0.9034895928439107,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7056043.783329721,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.060231596430889045,
+            "mdd": -0.29439562166702793
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.20156019267892178,
+            "mdd": -0.23684426410287485
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.960719262389837,
+            "mdd": -0.24176476232515798
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_confirmed": {
+        "cagr": 0.2212354401722585,
+        "total_return": 6.213263085138013,
+        "mdd": -0.29439562166702815,
+        "sharpe_zero_rf": 0.9952022584549373,
+        "volatility": 0.22743965236061572,
+        "ending_krw": 72132630.85138012,
+        "fee_paid_krw": 3685236.060280289,
+        "turnover": 46.37083295333396,
+        "rebalances": 122,
+        "average_exposure": 0.9091689275907373,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7056043.783329719,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.060231596430889156,
+            "mdd": -0.29439562166702815
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.23074538125290223,
+            "mdd": -0.25587863157964363
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.9735065746187224,
+            "mdd": -0.2417647623251592
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_volatility": {
+        "cagr": 0.21398440562096321,
+        "total_return": 5.800842522161526,
+        "mdd": -0.2880436376554557,
+        "sharpe_zero_rf": 0.9807994944446883,
+        "volatility": 0.22385001462298595,
+        "ending_krw": 68008425.22161525,
+        "fee_paid_krw": 3380643.1075985157,
+        "turnover": 42.967519025491974,
+        "rebalances": 124,
+        "average_exposure": 0.9067469249833219,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7119563.623445443,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.07189983454873283,
+            "mdd": -0.2880436376554557
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.23074538125290223,
+            "mdd": -0.25587863157964363
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.9209951802627732,
+            "mdd": -0.24176476232515798
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_fast": {
+        "cagr": 0.21615972694836993,
+        "total_return": 5.922284973779602,
+        "mdd": -0.29439562166702804,
+        "sharpe_zero_rf": 0.9650630757854989,
+        "volatility": 0.23107460719175,
+        "ending_krw": 69222849.73779602,
+        "fee_paid_krw": 4483415.917971579,
+        "turnover": 62.25059725451213,
+        "rebalances": 179,
+        "average_exposure": 0.9224200265046377,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7056043.78332972,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.07413721319564714,
+            "mdd": -0.29439562166702804
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.2716461437827219,
+            "mdd": -0.284951133289134
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.143432065600292,
+            "mdd": -0.24176476232515887
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_no_rsi_macd": {
+        "cagr": 0.2242250535815591,
+        "total_return": 6.389750279133213,
+        "mdd": -0.2880436376554554,
+        "sharpe_zero_rf": 1.009833018658607,
+        "volatility": 0.22629948885191495,
+        "ending_krw": 73897502.79133213,
+        "fee_paid_krw": 2988525.517652359,
+        "turnover": 35.49414350296592,
+        "rebalances": 102,
+        "average_exposure": 0.9172300652182367,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7119563.623445447,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.07189983454873172,
+            "mdd": -0.2880436376554554
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.23210118956305947,
+            "mdd": -0.25321331297836047
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.0609695361761977,
+            "mdd": -0.24176476232515842
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "basket_1x_buyhold": {
+        "cagr": 0.24083907102687685,
+        "total_return": 7.443190201226695,
+        "mdd": -0.4006468047593681,
+        "sharpe_zero_rf": 0.8892008266399003,
+        "volatility": 0.2909772565785296,
+        "ending_krw": 84431902.01226695,
+        "fee_paid_krw": 30002.427925941283,
+        "turnover": 1.0,
+        "rebalances": 1,
+        "average_exposure": 0.9999999999999915,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 5993531.952406319,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.007898000299080499,
+            "mdd": -0.32659328691254697
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.3271592955870436,
+            "mdd": -0.3989354472824149
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.4155173695945584,
+            "mdd": -0.35456846338871306
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04"
+        ]
+      },
+      "basket_1x_monthly": {
+        "cagr": 0.22866569942641912,
+        "total_return": 6.659065958849801,
+        "mdd": -0.3799536813906501,
+        "sharpe_zero_rf": 0.9090489499194581,
+        "volatility": 0.26611718045557325,
+        "ending_krw": 76590659.58849801,
+        "fee_paid_krw": 336773.4138882613,
+        "turnover": 3.5955395432341195,
+        "rebalances": 119,
+        "average_exposure": 1.0,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 6200463.186093499,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.01286740642014772,
+            "mdd": -0.3252338780965439
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.31014883556078654,
+            "mdd": -0.37847608704632063
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.118140013572089,
+            "mdd": -0.2724158371708132
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2017-02-01",
+          "2017-03-01",
+          "2017-04-03",
+          "2017-05-01"
+        ]
+      },
+      "qqq_buyhold": {
+        "cagr": 0.19449742165153294,
+        "total_return": 4.795385366840152,
+        "mdd": -0.35122525674818506,
+        "sharpe_zero_rf": 0.8883582480478237,
+        "volatility": 0.23052106482703577,
+        "ending_krw": 57953853.66840152,
+        "fee_paid_krw": 30002.427925941283,
+        "turnover": 1.0,
+        "rebalances": 1,
+        "average_exposure": 1.0,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 6487747.43251815,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": 0.048837312798116095,
+            "mdd": -0.2855937209891094
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.33221424014260803,
+            "mdd": -0.3483179809618274
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.514136859751995,
+            "mdd": -0.22770816026566376
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04"
+        ]
+      }
+    },
+    "cost60bps_cash0pct": {
+      "v2_threshold": {
+        "cagr": 0.23484686624034756,
+        "total_return": 7.048628543366661,
+        "mdd": -0.48925653388216195,
+        "sharpe_zero_rf": 0.8111132567185894,
+        "volatility": 0.32614555219370917,
+        "ending_krw": 80486285.4336666,
+        "fee_paid_krw": 9399902.042330172,
+        "turnover": 54.492341854455645,
+        "rebalances": 138,
+        "average_exposure": 0.9999999999999997,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 5107434.66117838,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": 0.010686332603348614,
+            "mdd": -0.3795777982639056
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.4089153697852299,
+            "mdd": -0.4879954733822479
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.8614811013600447,
+            "mdd": -0.32031943089406867
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v2_daily": {
+        "cagr": 0.2241472926346837,
+        "total_return": 6.385111061588831,
+        "mdd": -0.49908210478309856,
+        "sharpe_zero_rf": 0.7885028215293133,
+        "volatility": 0.3232794364585255,
+        "ending_krw": 73851110.61588831,
+        "fee_paid_krw": 11816058.322519187,
+        "turnover": 67.63868608128433,
+        "rebalances": 2486,
+        "average_exposure": 1.0,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 5009178.952169014,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": 0.008637863924652711,
+            "mdd": -0.37823792854551186
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.41842349344388985,
+            "mdd": -0.49785036666806903
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.6909196547712497,
+            "mdd": -0.3058244051486406
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2017-01-05",
+          "2017-01-06",
+          "2017-01-09",
+          "2017-01-10"
+        ]
+      },
+      "v4_recovery_no3x": {
+        "cagr": 0.21398982751269569,
+        "total_return": 5.801142815939453,
+        "mdd": -0.3021202391911538,
+        "sharpe_zero_rf": 0.9590977068787709,
+        "volatility": 0.23051895381641163,
+        "ending_krw": 68011428.15939453,
+        "fee_paid_krw": 5965133.011457242,
+        "turnover": 38.27188461130502,
+        "rebalances": 99,
+        "average_exposure": 0.9220367809629906,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 6978797.608088462,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.0805646323727156,
+            "mdd": -0.3021202391911538
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.2582571070941112,
+            "mdd": -0.2880029845206965
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.9415371017731764,
+            "mdd": -0.24700712204205044
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v4_strict_no3x": {
+        "cagr": 0.20966151566479607,
+        "total_return": 5.565174993744854,
+        "mdd": -0.3021202391911538,
+        "sharpe_zero_rf": 0.956440757925299,
+        "volatility": 0.22644077818724487,
+        "ending_krw": 65651749.93744855,
+        "fee_paid_krw": 5360247.086134468,
+        "turnover": 35.2778778704235,
+        "rebalances": 84,
+        "average_exposure": 0.9039279821449987,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 6978797.608088462,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.0805646323727145,
+            "mdd": -0.3021202391911538
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.21520869823481148,
+            "mdd": -0.24761492354075176
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.8080035152886547,
+            "mdd": -0.2470071220420509
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_confirmed": {
+        "cagr": 0.20091190883190335,
+        "total_return": 5.110509082775204,
+        "mdd": -0.3021202391911538,
+        "sharpe_zero_rf": 0.9212493396401756,
+        "volatility": 0.22743134955335192,
+        "ending_krw": 61105090.82775204,
+        "fee_paid_krw": 6633759.285012681,
+        "turnover": 46.359619470554875,
+        "rebalances": 122,
+        "average_exposure": 0.9092743327225876,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 6978797.608088462,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.08056463237271494,
+            "mdd": -0.3021202391911538
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.25616348086171736,
+            "mdd": -0.27315708433800245
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.7970593515533393,
+            "mdd": -0.24700712204205055
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_volatility": {
+        "cagr": 0.1949369860640764,
+        "total_return": 4.816504062555283,
+        "mdd": -0.29412478056739666,
+        "sharpe_zero_rf": 0.9099452156639534,
+        "volatility": 0.22385608908544632,
+        "ending_krw": 58165040.625552826,
+        "fee_paid_krw": 6123119.29334135,
+        "turnover": 42.95551895757828,
+        "rebalances": 124,
+        "average_exposure": 0.9068521648466761,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7058752.194326034,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.08758130575662393,
+            "mdd": -0.29412478056739666
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.25616348086171703,
+            "mdd": -0.2731570843380028
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.7459539556474635,
+            "mdd": -0.24700712204205
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_fast": {
+        "cagr": 0.19063148165596067,
+        "total_return": 4.612595336407395,
+        "mdd": -0.3240576358311569,
+        "sharpe_zero_rf": 0.8730283915865307,
+        "volatility": 0.23107000972124697,
+        "ending_krw": 56125953.364073955,
+        "fee_paid_krw": 7887753.078194265,
+        "turnover": 62.24383499500016,
+        "rebalances": 179,
+        "average_exposure": 0.9224536801023875,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 6759423.641688432,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.09876288566301128,
+            "mdd": -0.3021202391911536
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.31440347416948133,
+            "mdd": -0.3223886879694231
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.9502398069381752,
+            "mdd": -0.24700712204205122
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_no_rsi_macd": {
+        "cagr": 0.20811960438046384,
+        "total_return": 5.482908930652287,
+        "mdd": -0.29412478056739655,
+        "sharpe_zero_rf": 0.9513197131459394,
+        "volatility": 0.22624902398986468,
+        "ending_krw": 64829089.30652287,
+        "fee_paid_krw": 5492510.755972291,
+        "turnover": 35.48442360975929,
+        "rebalances": 102,
+        "average_exposure": 0.9173268035797792,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7058752.194326035,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.08758130575662271,
+            "mdd": -0.29412478056739655
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.24810293244993165,
+            "mdd": -0.2644339546118579
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.8917143416579876,
+            "mdd": -0.24700712204205055
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "basket_1x_buyhold": {
+        "cagr": 0.2404507423716613,
+        "total_return": 7.417103209817748,
+        "mdd": -0.4006468047593702,
+        "sharpe_zero_rf": 0.888112726541207,
+        "volatility": 0.29098163220971723,
+        "ending_krw": 84171032.09817748,
+        "fee_paid_krw": 60000.0,
+        "turnover": 1.0,
+        "rebalances": 1,
+        "average_exposure": 1.0000000000000016,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 5993531.952406298,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.00789800029908072,
+            "mdd": -0.32659328691254896
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.3271592955870469,
+            "mdd": -0.3989354472824169
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.415517369594512,
+            "mdd": -0.3545684633887203
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04"
+        ]
+      },
+      "basket_1x_monthly": {
+        "cagr": 0.22731399732151925,
+        "total_return": 6.576169038433479,
+        "mdd": -0.3804150666024433,
+        "sharpe_zero_rf": 0.9049018033223026,
+        "volatility": 0.2661166167539251,
+        "ending_krw": 75761690.38433479,
+        "fee_paid_krw": 668500.3771160595,
+        "turnover": 3.5955395432341204,
+        "rebalances": 119,
+        "average_exposure": 1.0,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 6195849.3339755675,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.012987890938439217,
+            "mdd": -0.32527070203395647
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.3108050145168407,
+            "mdd": -0.37892215308121424
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.106473463035717,
+            "mdd": -0.2724916165202831
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2017-02-01",
+          "2017-03-01",
+          "2017-04-03",
+          "2017-05-01"
+        ]
+      },
+      "qqq_buyhold": {
+        "cagr": 0.1941235959168064,
+        "total_return": 4.777479318927958,
+        "mdd": -0.35122525674818417,
+        "sharpe_zero_rf": 0.8869927289618079,
+        "volatility": 0.23052235212269467,
+        "ending_krw": 57774793.189279586,
+        "fee_paid_krw": 60000.0,
+        "turnover": 1.0,
+        "rebalances": 1,
+        "average_exposure": 1.0,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 6487747.432518158,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": 0.048837312798116095,
+            "mdd": -0.2855937209891095
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.33221424014260703,
+            "mdd": -0.34831798096182653
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.5141368597519942,
+            "mdd": -0.2277081602656642
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04"
+        ]
+      }
+    },
+    "cost60bps_cash3pct": {
+      "v2_threshold": {
+        "cagr": 0.23485697444963227,
+        "total_return": 7.04927992583468,
+        "mdd": -0.48925653388216195,
+        "sharpe_zero_rf": 0.8111386436644106,
+        "volatility": 0.3261454120317625,
+        "ending_krw": 80492799.25834681,
+        "fee_paid_krw": 9400662.784530886,
+        "turnover": 54.492341854455624,
+        "rebalances": 138,
+        "average_exposure": 0.9999999999999989,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 5107434.66117838,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": 0.010686332603351278,
+            "mdd": -0.3795777982639055
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.40891536978522924,
+            "mdd": -0.48799547338224813
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.861481101360081,
+            "mdd": -0.32031943089406856
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v2_daily": {
+        "cagr": 0.22415731325939836,
+        "total_return": 6.385708745013164,
+        "mdd": -0.49908210478309734,
+        "sharpe_zero_rf": 0.7885284244210572,
+        "volatility": 0.32327929602005634,
+        "ending_krw": 73857087.45013164,
+        "fee_paid_krw": 11817014.606336825,
+        "turnover": 67.63868608128433,
+        "rebalances": 2486,
+        "average_exposure": 1.0,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 5009178.952169026,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": 0.008637863924654043,
+            "mdd": -0.3782379285455113
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.4184234934438871,
+            "mdd": -0.4978503666680676
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.6909196547712892,
+            "mdd": -0.30582440514864073
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2017-01-05",
+          "2017-01-06",
+          "2017-01-09",
+          "2017-01-10"
+        ]
+      },
+      "v4_recovery_no3x": {
+        "cagr": 0.21681147753377172,
+        "total_return": 5.959048054129519,
+        "mdd": -0.30185417311293183,
+        "sharpe_zero_rf": 0.9693147642202399,
+        "volatility": 0.23048239874486076,
+        "ending_krw": 69590480.54129519,
+        "fee_paid_krw": 6055410.4535679035,
+        "turnover": 38.280177345172184,
+        "rebalances": 99,
+        "average_exposure": 0.9219460572416874,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 6981458.2688706815,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.07937567205664242,
+            "mdd": -0.30185417311293183
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.24948461014112877,
+            "mdd": -0.2811549663824148
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.9577112632867628,
+            "mdd": -0.2465570121218711
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v4_strict_no3x": {
+        "cagr": 0.21310632694181808,
+        "total_return": 5.752366721135603,
+        "mdd": -0.30185417311293183,
+        "sharpe_zero_rf": 0.9693821288946506,
+        "volatility": 0.2263350744074989,
+        "ending_krw": 67523667.21135603,
+        "fee_paid_krw": 5461270.413117542,
+        "turnover": 35.290616024511934,
+        "rebalances": 84,
+        "average_exposure": 0.9034895928439107,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 6981458.2688706815,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.07937567205664275,
+            "mdd": -0.30185417311293183
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.20275965157825204,
+            "mdd": -0.23799071738664646
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.8240889363991513,
+            "mdd": -0.2465570121218701
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_confirmed": {
+        "cagr": 0.20414073662446208,
+        "total_return": 5.274886518786964,
+        "mdd": -0.30185417311293183,
+        "sharpe_zero_rf": 0.9332184520248903,
+        "volatility": 0.2273895690916402,
+        "ending_krw": 62748865.18786964,
+        "fee_paid_krw": 6748563.311933728,
+        "turnover": 46.37083295333396,
+        "rebalances": 122,
+        "average_exposure": 0.9091689275907373,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 6981458.2688706815,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.07937567205664253,
+            "mdd": -0.30185417311293183
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.24570198576585323,
+            "mdd": -0.26502443039930235
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.8138696310956584,
+            "mdd": -0.24655701212187042
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_volatility": {
+        "cagr": 0.1982323826057668,
+        "total_return": 4.977046379112439,
+        "mdd": -0.2937991126675601,
+        "sharpe_zero_rf": 0.9224125100451538,
+        "volatility": 0.22381436170048818,
+        "ending_krw": 59770463.79112439,
+        "fee_paid_krw": 6235075.2963251965,
+        "turnover": 42.967519025491974,
+        "rebalances": 124,
+        "average_exposure": 0.9067469249833219,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7062008.873324399,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.08624987169070553,
+            "mdd": -0.2937991126675601
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.24570198576585434,
+            "mdd": -0.265024430399304
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.76338046808534,
+            "mdd": -0.24655701212187064
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_fast": {
+        "cagr": 0.1933647155371938,
+        "total_return": 4.741282224796548,
+        "mdd": -0.31586142402503803,
+        "sharpe_zero_rf": 0.883035809554045,
+        "volatility": 0.23104993871753787,
+        "ending_krw": 57412822.24796548,
+        "fee_paid_krw": 7990944.745968535,
+        "turnover": 62.25059725451213,
+        "rebalances": 179,
+        "average_exposure": 0.9224200265046377,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 6841385.759749619,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.09786118624330464,
+            "mdd": -0.30185417311293206
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.3060371746251376,
+            "mdd": -0.31417223915658155
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.9661481434917825,
+            "mdd": -0.24655701212187098
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "v5_no_rsi_macd": {
+        "cagr": 0.21108779705652347,
+        "total_return": 5.642105965423684,
+        "mdd": -0.29379911266755976,
+        "sharpe_zero_rf": 0.962321427905424,
+        "volatility": 0.22621054852968775,
+        "ending_krw": 66421059.65423684,
+        "fee_paid_krw": 5583886.4812607225,
+        "turnover": 35.49414350296592,
+        "rebalances": 102,
+        "average_exposure": 0.9172300652182367,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 7062008.873324403,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.0862498716907052,
+            "mdd": -0.29379911266755976
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.23882785973808318,
+            "mdd": -0.2570860077470941
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.908655606039952,
+            "mdd": -0.2465570121218692
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2018-02-09",
+          "2018-02-12",
+          "2018-04-03",
+          "2018-04-04"
+        ]
+      },
+      "basket_1x_buyhold": {
+        "cagr": 0.2404608964531525,
+        "total_return": 7.417784413259032,
+        "mdd": -0.4006468047593691,
+        "sharpe_zero_rf": 0.8881412681036287,
+        "volatility": 0.2909814757912117,
+        "ending_krw": 84177844.13259032,
+        "fee_paid_krw": 60004.85585188257,
+        "turnover": 1.0,
+        "rebalances": 1,
+        "average_exposure": 0.9999999999999915,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 5993531.95240631,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.00789800029908072,
+            "mdd": -0.3265932869125471
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.3271592955870444,
+            "mdd": -0.3989354472824159
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.4155173695945487,
+            "mdd": -0.3545684633887124
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04"
+        ]
+      },
+      "basket_1x_monthly": {
+        "cagr": 0.227324043868244,
+        "total_return": 6.576782184345052,
+        "mdd": -0.38041506660244373,
+        "sharpe_zero_rf": 0.904933063981562,
+        "volatility": 0.26611644786608585,
+        "ending_krw": 75767821.84345052,
+        "fee_paid_krw": 668554.4794296437,
+        "turnover": 3.5955395432341195,
+        "rebalances": 119,
+        "average_exposure": 1.0,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 6195849.333975563,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": -0.012987890938437108,
+            "mdd": -0.32527070203395636
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.3108050145168404,
+            "mdd": -0.3789221530812146
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 2.1064734630357465,
+            "mdd": -0.27249161652028364
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04",
+          "2017-02-01",
+          "2017-03-01",
+          "2017-04-03",
+          "2017-05-01"
+        ]
+      },
+      "qqq_buyhold": {
+        "cagr": 0.19413337077354798,
+        "total_return": 4.777946895325135,
+        "mdd": -0.3512252567481835,
+        "sharpe_zero_rf": 0.8870285922148,
+        "volatility": 0.23052226498012,
+        "ending_krw": 57779468.95325135,
+        "fee_paid_krw": 60004.85585188257,
+        "turnover": 1.0,
+        "rebalances": 1,
+        "average_exposure": 1.0,
+        "start": "2017-01-03",
+        "end": "2026-11-23",
+        "max_drawdown_krw_per_10m_at_peak": 6487747.432518165,
+        "regimes": {
+          "covid_2020": {
+            "start": "2020-02-19",
+            "end": "2020-06-30",
+            "total_return": 0.048837312798117205,
+            "mdd": -0.2855937209891092
+          },
+          "bear_2022": {
+            "start": "2022-01-03",
+            "end": "2022-12-30",
+            "total_return": -0.33221424014260614,
+            "mdd": -0.34831798096182576
+          },
+          "recent_2023_onward": {
+            "start": "2023-01-03",
+            "end": "2026-11-23",
+            "total_return": 1.5141368597520022,
+            "mdd": -0.2277081602656641
+          }
+        },
+        "trade_dates_sample": [
+          "2017-01-04"
+        ]
+      }
+    }
+  },
+  "github_run_url": "https://github.com/jwcepapa-create/autotrade_new/actions/runs/45390484899"
+}
