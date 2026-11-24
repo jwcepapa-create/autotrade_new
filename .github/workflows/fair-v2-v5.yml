@@ -1,0 +1,123 @@
+name: Fair V2-V4-V5 next-open validation
+
+on:
+  push:
+    branches:
+      - main
+      - research/fair-v2-v5-open-execution-20261124
+    paths:
+      - fair_compare.py
+      - tests/test_fair_compare.py
+      - .github/workflows/fair-v2-v5.yml
+  workflow_dispatch:
+    inputs:
+      end_date:
+        description: "Last completed US session YYYY-MM-DD (blank = yesterday NY)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  independent-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install requirements and pytest
+        run: pip install -r requirements.txt pytest
+      - name: Run causal, gap, cash, drift and cost regression tests
+        run: python -m pytest -q tests/test_fair_compare.py
+      - name: Run research with genuine Tiingo adjusted OHLC
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          END_DATE: ${{ inputs.end_date }}
+        run: |
+          if [ -z "$END_DATE" ]; then END_DATE=$(TZ=America/New_York date -d 'yesterday' +%F); fi
+          python fair_compare.py --end "$END_DATE"
+      - name: Archive every result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fair-v2-v5-${{ github.run_id }}
+          path: fair_compare_results/
+          if-no-files-found: warn
+          retention-days: 90
+      - name: Publish verified results to main for direct ChatGPT retrieval
+        if: success() && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 - <<'PY'
+          import base64
+          import json
+          import os
+          import urllib.error
+          import urllib.request
+          from pathlib import Path
+
+          report = json.loads(Path('fair_compare_results/summary.json').read_text())
+          if report.get('status') != 'completed':
+              raise SystemExit('Invalid report')
+          report['github_run_url'] = f"https://github.com/{os.environ['REPO']}/actions/runs/{os.environ['RUN_ID']}"
+          url = f"https://api.github.com/repos/{os.environ['REPO']}/contents/research_reports/latest_fair_compare.json"
+          headers = {'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
+                     'Accept': 'application/vnd.github+json',
+                     'Content-Type': 'application/json'}
+          sha = None
+          try:
+              with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=20) as f:
+                  sha = json.load(f)['sha']
+          except urllib.error.HTTPError as exc:
+              if exc.code != 404:
+                  raise
+          body = {'message': 'research: publish fair next-open comparison',
+                  'content': base64.b64encode(json.dumps(report, indent=2).encode()).decode(),
+                  'branch': 'main'}
+          if sha:
+              body['sha'] = sha
+          req = urllib.request.Request(url, data=json.dumps(body).encode(),
+                                       method='PUT', headers=headers)
+          with urllib.request.urlopen(req, timeout=20) as f:
+              print('Published verified comparison', f.status)
+          PY
+      - name: Send Telegram summary
+        if: always()
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.parse, urllib.request
+          from pathlib import Path
+          token, chat = os.getenv('TELEGRAM_BOT_TOKEN'), os.getenv('TELEGRAM_CHAT_ID')
+          if not token or not chat:
+              print('Telegram secrets unavailable')
+              raise SystemExit(0)
+          path = Path('fair_compare_results/summary.json')
+          msg = ['Fair V2-V4-V5 next-open 백테스트']
+          if path.exists():
+              result = json.loads(path.read_text())
+              scenarios = result['scenarios']['cost30bps_cash0pct']
+              msg += [f"{result['evaluation_start']} ~ {result['evaluation_end']}"]
+              for key in ('v2_threshold', 'v4_recovery_no3x', 'v5_volatility', 'qqq_buyhold'):
+                  d = scenarios[key]
+                  msg += [f"{key}: CAGR {d['cagr']:.2%}, MDD {d['mdd']:.2%}"]
+          else:
+              msg += ['FAILED: check Actions logs']
+          msg += [os.environ['RUN_URL']]
+          data = urllib.parse.urlencode({'chat_id': chat, 'text': '\n'.join(msg)}).encode()
+          url = f"https://api.telegram.org/bot{token}/sendMessage"
+          with urllib.request.urlopen(urllib.request.Request(url, data=data, method='POST'), timeout=20) as resp:
+              if not json.load(resp).get('ok'):
+                  raise ValueError('Telegram send failed')
+          print('Telegram sent')
+          PY
