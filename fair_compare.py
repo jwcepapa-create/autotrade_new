@@ -17,7 +17,7 @@ import pandas as pd
 from leverage_drawdown import ALL, BASE, DOUBLE, TRIPLE, weights
 from leverage_v4 import hybrid_targets
 from leverage_v5 import v5_targets
-from tiingo_data import Client, DataError, adjusted
+from tiingo_data import Client, DataError, adjusted, validate_coverage
 
 
 INITIAL = 10_000_000
@@ -215,7 +215,9 @@ def collect_price_bars(client, start, end):
     opens, closes, issues = {}, {}, {}
     for ticker in ALL:
         try:
-            bars = adjusted(client.daily(ticker, start, end))
+            original = client.daily(ticker, start, end)
+            validate_coverage(original, start, end)
+            bars = adjusted(original)
             opens[ticker] = bars.Open
             closes[ticker] = bars.Close
         except DataError as e:
@@ -224,8 +226,8 @@ def collect_price_bars(client, start, end):
         raise DataError("Missing required original Tiingo prices for " + ",".join(sorted(issues)))
     opening = pd.concat(opens, axis=1).sort_index()
     closing = pd.concat(closes, axis=1).sort_index()
-    valid = opening.notna().all(axis=1) & closing.notna().all(axis=1)
-    opening, closing = opening.loc[valid], closing.loc[valid]
+    if opening.isna().any().any() or closing.isna().any().any():
+        raise DataError("Missing aligned daily bars; refusing silent session deletion")
     validate_bars(opening, closing)
     return opening, closing
 
